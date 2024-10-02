@@ -23,21 +23,25 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Your Dashboard</h1>
-      <h2>Your Templates</h2>
+    <div className="container mt-5">
+      <h1 className="text-center mb-4">Your Dashboard</h1>
+      <h2 className="mb-3">Existing Templates</h2>
+      
       {templates.length ? (
-        <ul>
+        <ul className="list-group mb-4">
           {templates.map((template) => (
-            <li key={template.id}>
-              <Link to={`/template/${template.id}`}>{template.title}</Link>
+            <li key={template.id} className="list-group-item">
+              <Link to={`/template/${template.id}`} className="text-decoration-none">{template.title}</Link>
             </li>
           ))}
         </ul>
       ) : (
-        <p>You haven't created any templates yet.</p>
+        <p className="text-center">You haven't created any templates yet.</p>
       )}
-      <Link to="/create-template">Create New Template</Link>
+      
+      <div className="text-center">
+        <Link to="/create-template" className="btn btn-primary">Create New Template</Link>
+      </div>
     </div>
   );
 };

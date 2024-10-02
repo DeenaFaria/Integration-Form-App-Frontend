@@ -4,48 +4,46 @@ import { Link } from 'react-router-dom';
 
 const Home = () => {
   const [templates, setTemplates] = useState([]);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    const fetchTemplates = async () => {
+    const fetchUserTemplates = async () => {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
+
       try {
-        const res = await axios.get('/api/templates');
+        const res = await axios.get("http://localhost:5000/routes/user/templates", config);
         setTemplates(res.data);
       } catch (err) {
         console.error(err);
       }
     };
-    fetchTemplates();
-
-    // Check if the user is authenticated (you can use token stored in localStorage)
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
+    fetchUserTemplates();
   }, []);
 
   return (
-    <div>
-      <h1>Welcome to the Customizable Forms App</h1>
-      {isAuthenticated ? (
-        <>
-          <Link to="/create-template">Create New Template</Link>
-          <h2>Your Forms:</h2>
-          {/* List of the user's forms */}
-        </>
-      ) : (
-        <p>Please log in to create and manage your forms.</p>
-      )}
-      <h2>Available Templates</h2>
+    <div className="container mt-5">
+      <h1 className="text-center">Welcome to the Customizable Forms App</h1>
+
+      <h2 className="mt-4">Available Templates</h2>
       {templates.length ? (
-        <ul>
+        <ul className="list-group">
           {templates.map((template) => (
-            <li key={template.id}>
-              <Link to={`/template/${template.id}`}>{template.title}</Link>
+            <li key={template.id} className="list-group-item">
+              <Link to={`/template/${template.id}`} className="text-decoration-none">
+                {template.title}
+              </Link>
             </li>
           ))}
         </ul>
       ) : (
-        <p>No templates available</p>
+        <p className="mt-3">No templates available</p>
       )}
+
+      <p className="mt-4">
+        To create new templates, please <Link to="/login" className="link-primary">Log in</Link>
+      </p>
     </div>
   );
 };

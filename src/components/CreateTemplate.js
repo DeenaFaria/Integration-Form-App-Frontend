@@ -45,48 +45,70 @@ const CreateTemplate = () => {
   
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
-      />
-      <textarea
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      {questions.map((question, index) => (
-        <div key={index}>
-          <select
-            value={question.type}
-            onChange={(e) => handleQuestionChange(index, 'type', e.target.value)}
-          >
-            <option value="text">Single-Line Text</option>
-            <option value="textarea">Multi-Line Text</option>
-            <option value="number">Positive Integer</option>
-            <option value="checkbox">Checkbox</option>
-          </select>
+    <div className="container mt-5">
+      <h2>Create a Template</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group mb-3">
+          <label htmlFor="title" className="form-label">Title</label>
           <input
             type="text"
-            placeholder="Question"
-            value={question.value}
-            onChange={(e) => handleQuestionChange(index, 'value', e.target.value)}
+            className="form-control"
+            id="title"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
           />
         </div>
-      ))}
-      <button type="button" onClick={addQuestion}>Add Question</button>
-      <input
-        type="text"
-        placeholder="Tags (comma-separated)"
-        value={tags}
-        onChange={(e) => setTags(e.target.value)}
-      />
-      <button type="submit">Create Template</button>
-    </form>
+        <div className="form-group mb-3">
+          <label htmlFor="description" className="form-label">Description</label>
+          <textarea
+            className="form-control"
+            id="description"
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Questions</label>
+          {questions.map((question, index) => (
+            <div key={index} className="mb-2">
+              <select
+                className="form-select"
+                value={question.type}
+                onChange={(e) => handleQuestionChange(index, 'type', e.target.value)}
+              >
+                <option value="text">Single-Line Text</option>
+                <option value="textarea">Multi-Line Text</option>
+                <option value="number">Positive Integer</option>
+                <option value="checkbox">Checkbox</option>
+              </select>
+              <input
+                type="text"
+                className="form-control mt-1"
+                placeholder="Question"
+                value={question.value}
+                onChange={(e) => handleQuestionChange(index, 'value', e.target.value)}
+              />
+            </div>
+          ))}
+          <button type="button" className="btn btn-secondary" onClick={addQuestion}>Add Question</button>
+        </div>
+        <div className="form-group mb-3">
+          <label htmlFor="tags" className="form-label">Tags (comma-separated)</label>
+          <input
+            type="text"
+            className="form-control"
+            id="tags"
+            placeholder="Tags"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">Create Template</button>
+      </form>
+    </div>
   );
 };
-
 export default CreateTemplate;
