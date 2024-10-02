@@ -8,7 +8,9 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchUserTemplates = async () => {
       const token = localStorage.getItem("token");
-      const config = { headers: { "x-auth-token": token } };
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
 
       try {
         const res = await axios.get("http://localhost:5000/routes/user/templates", config);
