@@ -4,7 +4,7 @@ import axios from 'axios';
 const CreateTemplate = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [questions, setQuestions] = useState([{ type: 'text', value: '' }]);
+  const [questions, setQuestions] = useState([{ type: 'text', value: '', options: '' }]); // Added options
   const [tags, setTags] = useState('');
 
   const handleQuestionChange = (index, field, value) => {
@@ -13,28 +13,28 @@ const CreateTemplate = () => {
     setQuestions(newQuestions);
   };
 
-  const addQuestion = () => setQuestions([...questions, { type: 'text', value: '' }]);
+  const addQuestion = () => setQuestions([...questions, { type: 'text', value: '', options: '' }]); // Added options
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token'); // Retrieve token from localStorage
-  
+    const token = localStorage.getItem('token');
+
     if (!token) {
       console.error('No token found, please login.');
       return;
     }
-  
+
     const data = {
       title,
       description,
       questions,
-      tags: tags.split(',').map((tag) => tag.trim()), // Convert tags string to array
+      tags: tags.split(',').map((tag) => tag.trim()),
     };
-  
+
     try {
       const response = await axios.post('http://localhost:5000/user/templates', data, {
         headers: {
-          Authorization: `Bearer ${token}`, // Add the token to the Authorization header
+          Authorization: `Bearer ${token}`,
         },
       });
       console.log('Template created successfully:', response.data);
@@ -42,7 +42,6 @@ const CreateTemplate = () => {
       console.error('Error creating template:', error);
     }
   };
-  
 
   return (
     <div className="container mt-5">
@@ -83,6 +82,8 @@ const CreateTemplate = () => {
                 <option value="textarea">Multi-Line Text</option>
                 <option value="number">Positive Integer</option>
                 <option value="checkbox">Checkbox</option>
+                <option value="radio">Radio Button</option>
+                {/* Add any other question types here */}
               </select>
               <input
                 type="text"
@@ -91,6 +92,14 @@ const CreateTemplate = () => {
                 value={question.value}
                 onChange={(e) => handleQuestionChange(index, 'value', e.target.value)}
               />
+              {['checkbox', 'radio'].includes(question.type) && (
+                <textarea
+                  className="form-control mt-1"
+                  placeholder="Options (comma-separated)"
+                  value={question.options}
+                  onChange={(e) => handleQuestionChange(index, 'options', e.target.value)}
+                />
+              )}
             </div>
           ))}
           <button type="button" className="btn btn-secondary" onClick={addQuestion}>Add Question</button>
@@ -111,4 +120,5 @@ const CreateTemplate = () => {
     </div>
   );
 };
+
 export default CreateTemplate;

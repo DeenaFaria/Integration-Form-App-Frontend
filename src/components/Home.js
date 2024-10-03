@@ -7,13 +7,9 @@ const Home = () => {
 
   useEffect(() => {
     const fetchUserTemplates = async () => {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
 
       try {
-        const res = await axios.get("http://localhost:5000/routes/user/templates", config);
+        const res = await axios.get("http://localhost:5000/routes/user/templates");
         setTemplates(res.data);
       } catch (err) {
         console.error(err);
