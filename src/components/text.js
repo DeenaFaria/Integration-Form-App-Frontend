@@ -103,8 +103,7 @@ const ViewTemplate = () => {
   return (
     <div className="container mt-5">
       <h1>{template.title}</h1>
-      <Link to={`/fill-form/${id}`} className="btn btn-primary mb-4">Fill the form</Link>
-      <Link to={`/edit/${id}`} className="btn btn-primary mb-4">Edit the form</Link>
+      <Link to={`/edit/${id}`} className="btn btn-primary mb-4">Edit Template</Link>
 
       <form>
         <div className="form-group mb-3">
