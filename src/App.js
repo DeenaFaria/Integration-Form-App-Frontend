@@ -8,6 +8,8 @@ import CreateTemplate from './components/CreateTemplate';
 import FillForm from './components/FillForm'; 
 import ViewTemplate from './components/ViewTemplate';
 import EditTemplate from './components/EditTemplate';
+import SuccessPage from './components/SuccessPage';
+import ViewResponses from './components/VewResponses';
 
 function App() {
   return (
@@ -21,6 +23,9 @@ function App() {
         <Route path="/template/:id" element={<ViewTemplate />} /> {/* Route for viewing a specific template */}
         <Route path="/fill-form/:id" element={<FillForm />} />
         <Route path="/edit/:id" element={<EditTemplate />} />
+        <Route path="/success" element={<SuccessPage />} />
+        <Route path="/responses/:id" element={<ViewResponses/>}/>
+
       </Routes>
     </Router>
   );

@@ -63,8 +63,9 @@ const FillForm = () => {
     };
 
     try {
-      await axios.post(`http://localhost:5000/user/submitForm/${id}`, { responses: formData }, config);
-      navigate('/success'); // Navigate to a success page or back to the template
+      const response = await axios.post(`http://localhost:5000/user/submitForm/${id}`, { responses: formData }, config);
+      console.log('Response Data:', response.data); // Log response data for debugging
+      navigate('/success', { state: { responses: response.data } }); // Pass the response data
     } catch (err) {
       setError(err.response ? err.response.data : 'Error submitting form');
     }

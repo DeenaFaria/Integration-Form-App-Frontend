@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
+
 
 const Dashboard = () => {
   const [templates, setTemplates] = useState([]);
+  // Inside your Form Management component
+const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserTemplates = async () => {
@@ -32,6 +36,7 @@ const Dashboard = () => {
           {templates.map((template) => (
             <li key={template.id} className="list-group-item">
               <Link to={`/template/${template.id}`} className="text-decoration-none">{template.title}</Link>
+              <button onClick={() => navigate(`/responses/${template.id}`)}>View All Responses</button>
             </li>
           ))}
         </ul>

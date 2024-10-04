@@ -22,7 +22,7 @@ const EditTemplate = () => {
       };
 
       try {
-        const res = await axios.get(`http://localhost:5000/routes/user/templates/${id}`, config);
+        const res = await axios.get(`http://localhost:5000/user/templates/${id}`, config);
         const parsedTags = JSON.parse(res.data.tags || '[]');
 
         // Parse options for questions
@@ -117,7 +117,7 @@ const EditTemplate = () => {
 
     try {
         console.log('Template ID:', id);
-      await axios.put(`http://localhost:5000/routes/user/templates/${id}`, template, config);
+      await axios.put(`http://localhost:5000/user/templates/${id}`, template, config);
       alert('Template saved successfully');
     } catch (err) {
       setError(err.response ? err.response.data : 'Error saving template');
