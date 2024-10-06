@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { jwtDecode } from 'jwt-decode'; // Correctly import jwtDecode
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,11 +11,20 @@ const Login = () => {
     e.preventDefault();
     const body = { email, password };
     try {
-        const res = await axios.post("http://localhost:5000/routes/auth/login", body);
-      localStorage.setItem("token", res.data.token); // Store the token
+      const res = await axios.post("http://localhost:5000/routes/auth/login", body);
+
+      // Store the token
+      const token = res.data.token;
+      localStorage.setItem("token", token);
+
+      // Decode the token to get user information
+      const decoded = jwtDecode(token);
+      localStorage.setItem("userId", decoded.id); // Store the userId
+
       window.location = "/dashboard"; // Redirect to dashboard
     } catch (err) {
       console.error(err.response.data);
+      // Optionally, handle error display here (e.g., show a message to the user)
     }
   };
 

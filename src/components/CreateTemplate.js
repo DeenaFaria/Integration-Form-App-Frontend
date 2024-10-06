@@ -6,6 +6,7 @@ const CreateTemplate = () => {
   const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState([{ type: 'text', value: '', options: '' }]); // Added options
   const [tags, setTags] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleQuestionChange = (index, field, value) => {
     const newQuestions = [...questions];
@@ -38,14 +39,17 @@ const CreateTemplate = () => {
         },
       });
       console.log('Template created successfully:', response.data);
+      setSuccessMessage('Template created successfully!'); // Set success message
     } catch (error) {
       console.error('Error creating template:', error);
+      setSuccessMessage('Failed to create template. Please try again.');
     }
   };
 
   return (
     <div className="container mt-5">
       <h2>Create a Template</h2>
+      {successMessage && <div className="alert alert-success">{successMessage}</div>}
       <form onSubmit={handleSubmit}>
         <div className="form-group mb-3">
           <label htmlFor="title" className="form-label">Title</label>

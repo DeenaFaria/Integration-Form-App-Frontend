@@ -36,7 +36,7 @@ const navigate = useNavigate();
           {templates.map((template) => (
             <li key={template.id} className="list-group-item">
               <Link to={`/template/${template.id}`} className="text-decoration-none">{template.title}</Link>
-              <button onClick={() => navigate(`/responses/${template.id}`)}>View All Responses</button>
+              
             </li>
           ))}
         </ul>

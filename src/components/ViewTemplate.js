@@ -9,10 +9,13 @@ const ViewTemplate = () => {
     description: '',
     questions: [],
     tags: [],
+    creatorId:'',
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({}); // Store user input values
+  const userId = localStorage.getItem('userId'); // Or however you store the logged-in user's ID
+  console.log("userId from localStorage:", userId);
 
   useEffect(() => {
     const fetchTemplate = async () => {
@@ -24,6 +27,7 @@ const ViewTemplate = () => {
       try {
         const res = await axios.get(`http://localhost:5000/user/templates/${id}`, config);
         const parsedTags = JSON.parse(res.data.tags || '[]');
+        console.log("API Response:", res.data);
 
         // Parse options for questions
         const parsedQuestions = res.data.questions.map((question) => {
@@ -41,7 +45,9 @@ const ViewTemplate = () => {
           ...res.data,
           tags: parsedTags,
           questions: parsedQuestions,
+          creatorId: res.data.user_id, // Set creatorId here
         });
+        console.log("creatorId from API:", res.data.user_id);
         setLoading(false);
       } catch (err) {
         setError(err.response ? err.response.data : 'Error fetching template');
@@ -104,7 +110,15 @@ const ViewTemplate = () => {
     <div className="container mt-5">
       <h1>{template.title}</h1>
       <Link to={`/fill-form/${id}`} className="btn btn-primary mb-4">Fill the form</Link>
-      <Link to={`/edit/${id}`} className="btn btn-primary mb-4">Edit the form</Link>
+    {/* Conditionally render the buttons if the logged-in user is the creator */}
+    {String(userId) === String(template.creatorId) && (
+      <>
+        
+        <Link to={`/edit/${id}`} className="btn btn-primary mb-4">Edit the form</Link>
+        <Link to={`/responses/${id}`} className="btn btn-primary mb-4">View Responses</Link>
+        <Link to={`/settings/${id}`} className="btn btn-primary mb-4">Settings</Link>
+      </>
+    )}
 
       <form>
         <div className="form-group mb-3">
