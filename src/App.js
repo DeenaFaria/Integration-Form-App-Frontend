@@ -10,6 +10,7 @@ import ViewTemplate from './components/ViewTemplate';
 import EditTemplate from './components/EditTemplate';
 import SuccessPage from './components/SuccessPage';
 import ViewResponses from './components/VewResponses';
+import AdminPanel from './components/AdminPanel';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin-panel" element={<AdminPanel />} />
         <Route path="/create-template" element={<CreateTemplate />} />
         <Route path="/template/:id" element={<ViewTemplate />} /> {/* Route for viewing a specific template */}
         <Route path="/fill-form/:id" element={<FillForm />} />

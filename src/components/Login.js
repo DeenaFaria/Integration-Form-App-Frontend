@@ -20,8 +20,18 @@ const Login = () => {
       // Decode the token to get user information
       const decoded = jwtDecode(token);
       localStorage.setItem("userId", decoded.id); // Store the userId
+      localStorage.setItem("isAdmin", decoded.isAdmin); // Store the isAdmin flag
+          // Debugging Log
+    console.log("is_admin value:", decoded.isAdmin); // Log the is_admin value
 
-      window.location = "/dashboard"; // Redirect to dashboard
+      // Check if the user is an admin
+      if (decoded.isAdmin) {
+        console.log("Redirecting to admin panel");
+        window.location = "/admin-panel"; // Redirect to admin panel if the user is an admin
+      } else {
+        console.log("Redirecting to dashboard");
+        window.location = "/dashboard"; // Redirect to dashboard for regular users
+      }
     } catch (err) {
       console.error(err.response.data);
       // Optionally, handle error display here (e.g., show a message to the user)
