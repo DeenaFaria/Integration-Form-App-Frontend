@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+
 const EditTemplate = () => {
   const { id } = useParams();
   const [template, setTemplate] = useState({
@@ -10,9 +11,11 @@ const EditTemplate = () => {
     description: '',
     questions: [],
     tags: [],
+    image: '', // Add image to the template state
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [imageUpdated, setImageUpdated] = useState(false); // Track if the image was updated
 
   useEffect(() => {
     const fetchTemplate = async () => {
@@ -39,8 +42,9 @@ const EditTemplate = () => {
 
         setTemplate({
           ...res.data,
-          tags: parsedTags,
+          tags: Array.isArray(parsedTags) ? parsedTags : [],
           questions: parsedQuestions,
+          image: res.data.image_url || '', // Initialize image field
         });
         setLoading(false);
       } catch (err) {
@@ -65,14 +69,32 @@ const EditTemplate = () => {
     setTemplate({ ...template, tags: e.target.value.split(',').map(tag => tag.trim()) });
   };
 
+  // Handle image upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+  
+    if (file) {
+      setTemplate((prev) => ({ ...prev, image: file }));
+      setImageUpdated(true);
+    }
+  };
+  
+
+  // Remove the uploaded image
+  const handleRemoveImage = () => {
+    setTemplate({ ...template, image: '' });
+    setImageUpdated(true); // Mark the image as updated
+  };
+
   // Handle adding a new question
   const handleAddQuestion = () => {
-    const newQuestion = { id: Date.now(), type: 'text', value: '', options: [] };
+    const newQuestion = { id: Date.now(), type: 'text', value: '', options: [] }; // Initialize with empty options array
     setTemplate((prevTemplate) => ({
       ...prevTemplate,
       questions: [...prevTemplate.questions, newQuestion],
     }));
   };
+  
 
   // Handle question changes (edit question text, type, or options)
   const handleQuestionChange = (questionId, key, value) => {
@@ -95,6 +117,50 @@ const EditTemplate = () => {
     }));
   };
 
+  const handleAddOption = (questionId) => {
+    setTemplate((prevTemplate) => {
+      const updatedQuestions = prevTemplate.questions.map((question) => {
+        if (question.id === questionId) {
+          return { ...question, options: [...(question.options || []), { label: '', value: '' }] };
+        }
+        return question;
+      });
+      return { ...prevTemplate, questions: updatedQuestions };
+    });
+  };
+  
+  const handleDeleteOption = (questionId, optionIndex) => {
+    setTemplate((prevTemplate) => {
+      const updatedQuestions = prevTemplate.questions.map((question) => {
+        if (question.id === questionId) {
+          const updatedOptions = question.options.filter((_, index) => index !== optionIndex);
+          return { ...question, options: updatedOptions };
+        }
+        return question;
+      });
+      return { ...prevTemplate, questions: updatedQuestions };
+    });
+  };
+  
+  const handleOptionChange = (questionId, optionIndex, value) => {
+    setTemplate((prevTemplate) => {
+      const updatedQuestions = prevTemplate.questions.map((question) => {
+        if (question.id === questionId) {
+          const updatedOptions = question.options.map((option, index) => {
+            if (index === optionIndex) {
+              return { ...option, label: value, value: value };
+            }
+            return option;
+          });
+          return { ...question, options: updatedOptions };
+        }
+        return question;
+      });
+      return { ...prevTemplate, questions: updatedQuestions };
+    });
+  };
+  
+      
   // Handle drag-and-drop reordering
   const handleDragEnd = (result) => {
     if (!result.destination) return;
@@ -112,21 +178,48 @@ const EditTemplate = () => {
   const handleSave = async () => {
     const token = localStorage.getItem('token');
     const config = {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data' // Required for file uploads
+      },
     };
+  
+    const formData = new FormData();
+    formData.append('title', template.title);
+    formData.append('description', template.description);
+    formData.append('tags', JSON.stringify(template.tags));
+    
+    // Add the image only if it was updated
+    if (imageUpdated) {
+      formData.append('image', template.image); 
+    }
+  
+    // Append each question separately as formData cannot directly handle arrays
+  // Append each question as a separate field
+  template.questions.forEach((question, index) => {
+    formData.append(`questions[${index}][id]`, question.id);
+    formData.append(`questions[${index}][type]`, question.type);
+    formData.append(`questions[${index}][value]`, question.value);
 
+    // Handle options if the question has them (e.g., radio, checkbox)
+    if (question.options && question.options.length > 0) {
+      question.options.forEach((option, optIndex) => {
+        formData.append(`questions[${index}][options][${optIndex}][label]`, option.label);
+        formData.append(`questions[${index}][options][${optIndex}][value]`, option.value);
+      });
+    }
+  });
+  
     try {
-        console.log('Template ID:', id);
-      await axios.put(`http://localhost:5000/user/templates/${id}`, template, config);
+      await axios.put(`http://localhost:5000/user/templates/${id}`, formData, config);
       alert('Template saved successfully');
     } catch (err) {
       setError(err.response ? err.response.data : 'Error saving template');
     }
   };
-
+  
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-danger">{error.message || 'An error occurred'}</p>;
-
 
   return (
     <div className="container mt-5">
@@ -161,10 +254,21 @@ const EditTemplate = () => {
           type="text"
           className="form-control"
           id="formTags"
-          value={template.tags.join(', ')}
+         value={template.tags.length > 0 ? template.tags.join(', ') : ''}
           onChange={handleTagsChange}
           placeholder="Enter tags"
         />
+      </div>
+
+      <div className="form-group mb-3">
+        <label htmlFor="formImage" className="form-label">Image</label>
+        <input type="file" className="form-control" id="ImageFile" onChange={handleImageUpload} />
+        {template.image && (
+          <div className="mt-2">
+            <img src={template.image} alt="Template Preview" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
+            <button className="btn btn-danger mt-2" onClick={handleRemoveImage}>Remove Image</button>
+          </div>
+        )}
       </div>
 
       <h2 className="mt-4">Questions</h2>
@@ -175,37 +279,62 @@ const EditTemplate = () => {
           {(provided) => (
             <ul className="list-group mb-4" {...provided.droppableProps} ref={provided.innerRef}>
               {template.questions.map((question, index) => (
-                <Draggable key={question.id} draggableId={question.id.toString()} index={index}>
-                  {(provided) => (
-                    <li
-                      className="list-group-item"
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <input
-                        type="text"
-                        className="form-control mb-2"
-                        value={question.value}
-                        onChange={(e) => handleQuestionChange(question.id, 'value', e.target.value)}
-                        placeholder="Edit question"
-                      />
-                      <select
-                        className="form-control mb-2"
-                        value={question.type}
-                        onChange={(e) => handleQuestionChange(question.id, 'type', e.target.value)}
-                      >
-                        <option value="text">Text</option>
-                        <option value="textarea">Textarea</option>
-                        <option value="radio">Radio</option>
-                        <option value="checkbox">Checkbox</option>
-                        <option value="number">Number</option>
-                      </select>
+  <Draggable key={question.id} draggableId={question.id.toString()} index={index}>
+  {(provided) => (
+    <li
+      className="list-group-item"
+      ref={provided.innerRef}
+      {...provided.draggableProps}
+      {...provided.dragHandleProps}
+    >
+      <input
+        type="text"
+        className="form-control mb-2"
+        value={question.value}
+        onChange={(e) => handleQuestionChange(question.id, 'value', e.target.value)}
+        placeholder="Edit question"
+      />
+      <select
+        className="form-control mb-2"
+        value={question.type}
+        onChange={(e) => handleQuestionChange(question.id, 'type', e.target.value)}
+      >
+        <option value="text">Text</option>
+        <option value="textarea">Textarea</option>
+        <option value="radio">Radio</option>
+        <option value="checkbox">Checkbox</option>
+        <option value="number">Number</option>
+      </select>
 
-                      <button className="btn btn-danger" onClick={() => handleDeleteQuestion(question.id)}>Delete Question</button>
-                    </li>
-                  )}
-                </Draggable>
+      {question.type === 'radio' || question.type === 'checkbox' ? (
+  <>
+    {question.options && question.options.length > 0 ? (
+      question.options.map((option, optionIndex) => (
+        <div key={optionIndex}>
+          <input
+            type="text"
+            className="form-control"
+            value={option.label}
+            onChange={(e) => handleOptionChange(question.id, optionIndex, e.target.value)}
+          />
+          <button onClick={() => handleDeleteOption(question.id, optionIndex)}>Delete Option</button>
+        </div>
+      ))
+    ) : (
+      <p>No options available. Add some!</p>
+    )}
+    <button onClick={() => handleAddOption(question.id)}>Add Option</button>
+  </>
+) : null}
+
+
+      <button className="btn btn-danger" onClick={() => handleDeleteQuestion(question.id)}>
+        Delete Question
+      </button>
+    </li>
+  )}
+</Draggable>
+
               ))}
               {provided.placeholder}
             </ul>

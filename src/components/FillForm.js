@@ -21,17 +21,25 @@ const FillForm = () => {
         const res = await axios.get(`http://localhost:5000/user/templates/${id}`, config);
         const parsedTags = JSON.parse(res.data.tags || '[]');
 
-        // Parse options for questions
-        const parsedQuestions = res.data.questions.map((question) => {
-          if ((question.type === 'radio' || question.type === 'checkbox') && typeof question.options === 'string') {
-            const optionsArray = question.options.split(',').map((option) => ({
-              label: option.trim(),
-              value: option.trim(),
-            }));
-            return { ...question, options: optionsArray };
-          }
-          return question;
-        });
+// Parse options for questions
+const parsedQuestions = res.data.questions.map((question) => {
+  if ((question.type === 'radio' || question.type === 'checkbox') && typeof question.options === 'string') {
+    try {
+      // Parse the options if they are a valid JSON string
+      const optionsArray = JSON.parse(question.options);
+      return { ...question, options: optionsArray };
+    } catch (error) {
+      // If it's not valid JSON, fall back to splitting by commas
+      const optionsArray = question.options.split(',').map((option) => ({
+        label: option.trim(),
+        value: option.trim(),
+      }));
+      return { ...question, options: optionsArray };
+    }
+  }
+  return question;
+});
+
 
         setTemplate({
           ...res.data,

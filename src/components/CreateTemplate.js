@@ -4,8 +4,9 @@ import axios from 'axios';
 const CreateTemplate = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [questions, setQuestions] = useState([{ type: 'text', value: '', options: '' }]); // Added options
+  const [questions, setQuestions] = useState([{ type: 'text', value: '', options: '' }]);
   const [tags, setTags] = useState('');
+  const [image, setImage] = useState(null); // New state for image
   const [successMessage, setSuccessMessage] = useState('');
 
   const handleQuestionChange = (index, field, value) => {
@@ -14,7 +15,7 @@ const CreateTemplate = () => {
     setQuestions(newQuestions);
   };
 
-  const addQuestion = () => setQuestions([...questions, { type: 'text', value: '', options: '' }]); // Added options
+  const addQuestion = () => setQuestions([...questions, { type: 'text', value: '', options: '' }]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,21 +26,33 @@ const CreateTemplate = () => {
       return;
     }
 
-    const data = {
-      title,
-      description,
-      questions,
-      tags: tags.split(',').map((tag) => tag.trim()),
-    };
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('tags', tags.split(',').map((tag) => tag.trim()));
+
+    // Append questions to FormData
+    questions.forEach((question, index) => {
+      formData.append(`questions[${index}][type]`, question.type);
+      formData.append(`questions[${index}][value]`, question.value);
+      formData.append(`questions[${index}][options]`, question.options);
+    });
+
+    // Append the image file
+    if (image) {
+      formData.append('image', image);
+    }
 
     try {
-      const response = await axios.post('http://localhost:5000/user/templates', data, {
+      const response = await axios.post('http://localhost:5000/user/templates', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data', // Important for file upload
         },
       });
       console.log('Template created successfully:', response.data);
-      setSuccessMessage('Template created successfully!'); // Set success message
+      setSuccessMessage('Template created successfully!');
     } catch (error) {
       console.error('Error creating template:', error);
       setSuccessMessage('Failed to create template. Please try again.');
@@ -73,6 +86,15 @@ const CreateTemplate = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
+        <div className="form-group mb-3">
+          <label htmlFor="image" className="form-label">Upload Image</label>
+          <input
+            type="file"
+            className="form-control"
+            id="image"
+            onChange={(e) => setImage(e.target.files[0])} // Set the image file
+          />
+        </div>
         <div className="mb-3">
           <label className="form-label">Questions</label>
           {questions.map((question, index) => (
@@ -87,7 +109,6 @@ const CreateTemplate = () => {
                 <option value="number">Positive Integer</option>
                 <option value="checkbox">Checkbox</option>
                 <option value="radio">Radio Button</option>
-                {/* Add any other question types here */}
               </select>
               <input
                 type="text"

@@ -9,13 +9,19 @@ const ViewTemplate = () => {
     description: '',
     questions: [],
     tags: [],
-    creatorId:'',
+    creatorId: '',
+    imageUrl: '',
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [formData, setFormData] = useState({}); // Store user input values
-  const userId = localStorage.getItem('userId'); // Or however you store the logged-in user's ID
-  console.log("userId from localStorage:", userId);
+  const [formData, setFormData] = useState({});
+  const [likes, setLikes] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [comments, setComments] = useState([]);
+  const [isCommentLoading, setIsCommentLoading] = useState(false);
+  const userId = localStorage.getItem('userId');
+  const userName = localStorage.getItem('username');
 
   useEffect(() => {
     const fetchTemplate = async () => {
@@ -26,17 +32,21 @@ const ViewTemplate = () => {
 
       try {
         const res = await axios.get(`http://localhost:5000/user/templates/${id}`, config);
+        console.log('Template data fetched:', res.data); 
         const parsedTags = JSON.parse(res.data.tags || '[]');
-        console.log("API Response:", res.data);
 
-        // Parse options for questions
         const parsedQuestions = res.data.questions.map((question) => {
           if ((question.type === 'radio' || question.type === 'checkbox') && typeof question.options === 'string') {
-            const optionsArray = question.options.split(',').map((option) => ({
-              label: option.trim(),
-              value: option.trim(),
-            }));
-            return { ...question, options: optionsArray };
+            try {
+              const optionsArray = JSON.parse(question.options);
+              return { ...question, options: optionsArray };
+            } catch (error) {
+              const optionsArray = question.options.split(',').map((option) => ({
+                label: option.trim(),
+                value: option.trim(),
+              }));
+              return { ...question, options: optionsArray };
+            }
           }
           return question;
         });
@@ -45,20 +55,78 @@ const ViewTemplate = () => {
           ...res.data,
           tags: parsedTags,
           questions: parsedQuestions,
-          creatorId: res.data.user_id, // Set creatorId here
+          imageUrl: res.data.image_url,
+          creatorId: res.data.user_id,
         });
-        console.log("creatorId from API:", res.data.user_id);
+
         setLoading(false);
+        setLikes(res.data.likes_count || 0);
+        setLiked(res.data.likedByCurrentUser || false);
+        
       } catch (err) {
         setError(err.response ? err.response.data : 'Error fetching template');
         setLoading(false);
       }
     };
 
+    fetchComments();
     fetchTemplate();
   }, [id]);
 
-  // Handle input changes for questions
+  const fetchComments = async (templateId) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/user/templates/${id}/comments`);
+      console.log("Comments for Template:", response.data);
+      setComments(response.data || []);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    }
+    
+  };
+
+  const handleLike = async () => {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+  
+    try {
+      if (liked) {
+        const res = await axios.delete(`http://localhost:5000/user/templates/${id}/unlike`, config);
+        setLikes(res.data.likes_count); // Update likes count from server response
+        console.log("Likes count: ", res.data.likes_count);
+      } else {
+        const res = await axios.post(`http://localhost:5000/user/templates/${id}/like`, {}, config);
+        setLikes(res.data.likes_count); // Update likes count from server response
+      }
+      setLiked(!liked);
+    } catch (error) {
+      console.error('Error liking/unliking template', error);
+    }
+  };
+  
+  
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return; // Prevent empty comments
+    setIsCommentLoading(true); // Set loading state
+  
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+  
+    try {
+      const res = await axios.post(`http://localhost:5000/user/templates/${id}/comments`, { text: newComment }, config); // No need to send userId
+      setComments((prevComments) => [...prevComments, res.data]); // Update with the new comment data
+      setNewComment(''); // Clear the comment input
+    } catch (error) {
+      console.error('Error adding comment', error);
+    } finally {
+      setIsCommentLoading(false); // Reset loading state
+    }
+  };
+  
   const handleInputChange = (questionId, value) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -66,7 +134,6 @@ const ViewTemplate = () => {
     }));
   };
 
-  // Handle title and description changes
   const handleTitleChange = (e) => {
     setTemplate({ ...template, title: e.target.value });
   };
@@ -75,14 +142,11 @@ const ViewTemplate = () => {
     setTemplate({ ...template, description: e.target.value });
   };
 
-  // Handle option changes for MCQ
-  const handleOptionChange = (questionId, index, value) => {
+  const handleQuestionChange = (questionId, value) => {
     setTemplate((prevTemplate) => {
       const updatedQuestions = prevTemplate.questions.map((question) => {
         if (question.id === questionId) {
-          const updatedOptions = [...question.options];
-          updatedOptions[index].label = value; // Update the option label
-          return { ...question, options: updatedOptions };
+          return { ...question, value };
         }
         return question;
       });
@@ -90,35 +154,49 @@ const ViewTemplate = () => {
     });
   };
 
-  // Handle question text changes
-  const handleQuestionChange = (questionId, value) => {
-    setTemplate((prevTemplate) => {
-      const updatedQuestions = prevTemplate.questions.map((question) => {
-        if (question.id === questionId) {
-          return { ...question, value }; // Update the question text
-        }
-        return question;
-      });
-      return { ...prevTemplate, questions: updatedQuestions };
-    });
-  };
+ 
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-danger">{error}</p>;
 
   return (
     <div className="container mt-5">
+      <button onClick={handleLike} className={`btn ${liked ? 'btn-danger' : 'btn-outline-primary'}`}>
+        {liked ? '❤️ Liked' : '♡ Like'} ({likes})
+      </button>
       <h1>{template.title}</h1>
-      <Link to={`/fill-form/${id}`} className="btn btn-primary mb-4">Fill the form</Link>
-    {/* Conditionally render the buttons if the logged-in user is the creator */}
-    {String(userId) === String(template.creatorId) && (
-      <>
-        
-        <Link to={`/edit/${id}`} className="btn btn-primary mb-4">Edit the form</Link>
-        <Link to={`/responses/${id}`} className="btn btn-primary mb-4">View Responses</Link>
-        <Link to={`/settings/${id}`} className="btn btn-primary mb-4">Settings</Link>
-      </>
-    )}
+
+      {/* Comment Input */}
+      <div className="input-group mb-3">
+        <input
+          type="text"
+          className="form-control"
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="Add a comment..."
+        />
+        <button onClick={handleAddComment} className="btn btn-primary" disabled={isCommentLoading}>
+          {isCommentLoading ? 'Submitting...' : 'Submit'}
+        </button>
+      </div>
+
+      {template.imageUrl && (
+        <div className="image-container mb-4">
+          <img src={template.imageUrl} alt="Template Visual" style={{ maxWidth: '100%', height: 'auto' }} />
+        </div>
+      )}
+
+      <Link to={`/fill-form/${id}`} className="btn btn-primary mb-4">
+        Fill the form
+      </Link>
+
+      {String(userId) === String(template.creatorId) && (
+        <>
+          <Link to={`/edit/${id}`} className="btn btn-primary mb-4">Edit the form</Link>
+          <Link to={`/responses/${id}`} className="btn btn-primary mb-4">View Responses</Link>
+          <Link to={`/settings/${id}`} className="btn btn-primary mb-4">Settings</Link>
+        </>
+      )}
 
       <form>
         <div className="form-group mb-3">
@@ -153,113 +231,92 @@ const ViewTemplate = () => {
                 <input
                   type="text"
                   className="form-control mt-2"
-                  value={question.value} // Edit the question value
-                  onChange={(e) => handleQuestionChange(question.id, e.target.value)} // Handle question edit
+                  value={question.value}
+                  onChange={(e) => handleQuestionChange(question.id, e.target.value)}
                   placeholder="Edit question"
                 />
                 <br />
                 <strong>Type:</strong> {question.type}
                 <br />
-                {renderInputField(question, formData, handleInputChange, handleOptionChange)}
+                {renderInputField(question, formData, handleInputChange)}
               </li>
             ))
           ) : (
-            <li className="list-group-item">No questions available.</li>
+            <li className="list-group-item">No questions available</li>
           )}
         </ul>
-
-        <h2 className="mt-4">Tags</h2>
-        <p>{Array.isArray(template.tags) && template.tags.length > 0 ? template.tags.join(', ') : 'No tags available.'}</p>
       </form>
+
+      <h3>Comments</h3>
+      {comments.length > 0 ? (
+        comments.map(comment => (
+          <div key={comment.id}>
+            <p><strong>{comment.username}:</strong> {comment.content}</p>
+            <p><small>Posted on {new Date(comment.created_at).toLocaleString()}</small></p>
+          </div>
+        ))
+      ) : (
+        <p>No comments yet.</p>
+      )}
     </div>
   );
 };
 
-// Function to render different types of input fields based on question type
-const renderInputField = (question, formData, handleInputChange, handleOptionChange) => {
-    const { id, type, options } = question;
-  
-    switch (type) {
-      case 'text':
-        return (
+const renderInputField = (question, formData, handleInputChange) => {
+  switch (question.type) {
+    case 'text':
+      return (
+        <input
+          type="text"
+          value={formData[question.id] || ''}
+          onChange={(e) => handleInputChange(question.id, e.target.value)}
+          className="form-control"
+        />
+      );
+    case 'textarea':
+      return (
+        <textarea
+          value={formData[question.id] || ''}
+          onChange={(e) => handleInputChange(question.id, e.target.value)}
+          className="form-control"
+        />
+      );
+    case 'radio':
+      return Array.isArray(question.options) ? question.options.map((option) => (
+        <div key={option.value} className="form-check">
           <input
-            type="text"
-            className="form-control mt-2"
-            value={formData[id] || ''}
-            onChange={(e) => handleInputChange(id, e.target.value)}
-            placeholder={question.value}
+            type="radio"
+            className="form-check-input"
+            name={question.id}
+            value={option.value}
+            checked={formData[question.id] === option.value}
+            onChange={(e) => handleInputChange(question.id, e.target.value)}
           />
-        );
-      case 'number':
-        return (
+          <label className="form-check-label">{option.label}</label>
+        </div>
+      )) : <p>No options available</p>;
+    case 'checkbox':
+      return Array.isArray(question.options) ? question.options.map((option) => (
+        <div key={option.value} className="form-check">
           <input
-            type="number"
-            className="form-control mt-2"
-            value={formData[id] || ''}
-            onChange={(e) => handleInputChange(id, e.target.value)}
-            placeholder={question.value}
+            type="checkbox"
+            className="form-check-input"
+            value={option.value}
+            checked={formData[question.id]?.includes(option.value) || false}
+            onChange={(e) => {
+              const value = e.target.value;
+              const checked = e.target.checked;
+              handleInputChange(question.id, checked 
+                ? [...(formData[question.id] || []), value] 
+                : (formData[question.id] || []).filter(v => v !== value));
+            }}
           />
-        );
-      case 'textarea':
-        return (
-          <textarea
-            className="form-control mt-2"
-            value={formData[id] || ''}
-            onChange={(e) => handleInputChange(id, e.target.value)}
-            placeholder={question.value}
-          ></textarea>
-        );
-      case 'checkbox':
-        return options.map((option, index) => (
-          <div key={index} className="form-check">
-            <input
-              type="checkbox"
-              className="form-check-input"
-              id={`checkbox-${id}-${index}`}
-              checked={formData[id] && formData[id].includes(option.value)}
-              onChange={(e) => {
-                const newValue = e.target.checked
-                  ? [...(formData[id] || []), option.value]
-                  : (formData[id] || []).filter((val) => val !== option.value);
-                handleInputChange(id, newValue);
-              }}
-            />
-            <label className="form-check-label" htmlFor={`checkbox-${id}-${index}`}>
-              {option.label}
-            </label>
-            <input
-              type="text"
-              className="form-control mt-2"
-              value={option.label}
-              onChange={(e) => handleOptionChange(id, index, e.target.value)}
-              placeholder="Edit option"
-            />
-          </div>
-        ));
-      case 'radio':
-        return options.map((option, index) => (
-          <div key={index} className="form-check">
-            <input
-              type="radio"
-              className="form-check-input"
-              name={id}
-              value={option.value}
-              checked={formData[id] === option.value}
-              onChange={(e) => handleInputChange(id, e.target.value)}
-            />
-            <label className="form-check-label">{option.label}</label>
-            <input
-              type="text"
-              className="form-control mt-2"
-              value={option.label}
-              onChange={(e) => handleOptionChange(id, index, e.target.value)}
-              placeholder="Edit option"
-            />
-          </div>
-        ));
-      default:
-        return <p>Unsupported question type: {type}</p>;
-    }
+          <label className="form-check-label">{option.label}</label>
+        </div>
+      )) : <p>No options available</p>;
+    default:
+      return null;
+  }
 };
 
 export default ViewTemplate;
