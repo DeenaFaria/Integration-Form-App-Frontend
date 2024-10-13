@@ -11,6 +11,7 @@ import EditTemplate from './components/EditTemplate';
 import SuccessPage from './components/SuccessPage';
 import ViewResponses from './components/VewResponses';
 import AdminPanel from './components/AdminPanel';
+import AccessSettings from './components/AccessSettings';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/template/:id" element={<ViewTemplate />} /> {/* Route for viewing a specific template */}
         <Route path="/fill-form/:id" element={<FillForm />} />
         <Route path="/edit/:id" element={<EditTemplate />} />
+        <Route path="/access-settings/:id" element={<AccessSettings />} />
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/responses/:id" element={<ViewResponses/>}/>
 

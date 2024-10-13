@@ -157,7 +157,7 @@ const ViewTemplate = () => {
         <>
           <Link to={`/edit/${id}`} className="btn btn-primary mb-4">Edit the form</Link>
           <Link to={`/responses/${id}`} className="btn btn-primary mb-4">View Responses</Link>
-          <Link to={`/settings/${id}`} className="btn btn-primary mb-4">Settings</Link>
+          <Link to={`/access-settings/${id}`} className="btn btn-primary mb-4">Settings</Link>
         </>
       )}
 

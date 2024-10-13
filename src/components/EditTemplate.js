@@ -188,27 +188,26 @@ const EditTemplate = () => {
     formData.append('title', template.title);
     formData.append('description', template.description);
     formData.append('tags', JSON.stringify(template.tags));
-    
+  
     // Add the image only if it was updated
     if (imageUpdated) {
       formData.append('image', template.image); 
     }
   
     // Append each question separately as formData cannot directly handle arrays
-  // Append each question as a separate field
-  template.questions.forEach((question, index) => {
-    formData.append(`questions[${index}][id]`, question.id);
-    formData.append(`questions[${index}][type]`, question.type);
-    formData.append(`questions[${index}][value]`, question.value);
-
-    // Handle options if the question has them (e.g., radio, checkbox)
-    if (question.options && question.options.length > 0) {
-      question.options.forEach((option, optIndex) => {
-        formData.append(`questions[${index}][options][${optIndex}][label]`, option.label);
-        formData.append(`questions[${index}][options][${optIndex}][value]`, option.value);
-      });
-    }
-  });
+    template.questions.forEach((question, index) => {
+      formData.append(`questions[${index}][id]`, question.id);
+      formData.append(`questions[${index}][type]`, question.type);
+      formData.append(`questions[${index}][value]`, question.value);
+  
+      // Safeguard to ensure options are processed only if they exist and are an array
+      if (Array.isArray(question.options)) {
+        question.options.forEach((option, optIndex) => {
+          formData.append(`questions[${index}][options][${optIndex}][label]`, option.label);
+          formData.append(`questions[${index}][options][${optIndex}][value]`, option.value);
+        });
+      }
+    });
   
     try {
       await axios.put(`http://localhost:5000/user/templates/${id}`, formData, config);
@@ -217,6 +216,7 @@ const EditTemplate = () => {
       setError(err.response ? err.response.data : 'Error saving template');
     }
   };
+  
   
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-danger">{error.message || 'An error occurred'}</p>;
