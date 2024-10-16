@@ -6,8 +6,16 @@ const CreateTemplate = () => {
   const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState([{ type: 'text', value: '', options: '' }]);
   const [tags, setTags] = useState('');
-  const [image, setImage] = useState(null); // New state for image
+  const [selectedTopic, setSelectedTopic] = useState(''); // New state for selected topic
+  const [image, setImage] = useState(null); // State for image
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const topics = [
+    "Education",
+    "Quiz",
+    "Other",
+  ];
 
   const handleQuestionChange = (index, field, value) => {
     const newQuestions = [...questions];
@@ -15,7 +23,9 @@ const CreateTemplate = () => {
     setQuestions(newQuestions);
   };
 
-  const addQuestion = () => setQuestions([...questions, { type: 'text', value: '', options: '' }]);
+  const addQuestion = () => {
+    setQuestions([...questions, { type: 'text', value: '', options: '' }]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,6 +41,7 @@ const CreateTemplate = () => {
     formData.append('title', title);
     formData.append('description', description);
     formData.append('tags', tags.split(',').map((tag) => tag.trim()));
+    formData.append('topic', selectedTopic); // Append selected topic
 
     // Append questions to FormData
     questions.forEach((question, index) => {
@@ -53,9 +64,11 @@ const CreateTemplate = () => {
       });
       console.log('Template created successfully:', response.data);
       setSuccessMessage('Template created successfully!');
+      setErrorMessage(''); // Clear any previous error message
     } catch (error) {
       console.error('Error creating template:', error);
-      setSuccessMessage('Failed to create template. Please try again.');
+      setSuccessMessage('');
+      setErrorMessage('Failed to create template. Please try again.');
     }
   };
 
@@ -63,6 +76,7 @@ const CreateTemplate = () => {
     <div className="container mt-5">
       <h2>Create a Template</h2>
       {successMessage && <div className="alert alert-success">{successMessage}</div>}
+      {errorMessage && <div className="alert alert-danger">{errorMessage}</div>}
       <form onSubmit={handleSubmit}>
         <div className="form-group mb-3">
           <label htmlFor="title" className="form-label">Title</label>
@@ -84,6 +98,7 @@ const CreateTemplate = () => {
             placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            required
           />
         </div>
         <div className="form-group mb-3">
@@ -93,7 +108,23 @@ const CreateTemplate = () => {
             className="form-control"
             id="image"
             onChange={(e) => setImage(e.target.files[0])} // Set the image file
+            accept="image/*" // Optional: restrict file types to images only
           />
+        </div>
+        <div className="form-group mb-3">
+          <label htmlFor="topic" className="form-label">Select Topic</label>
+          <select
+            className="form-select"
+            id="topic"
+            value={selectedTopic}
+            onChange={(e) => setSelectedTopic(e.target.value)}
+            required
+          >
+            <option value="">Select a topic...</option>
+            {topics.map((topic, index) => (
+              <option key={index} value={topic}>{topic}</option>
+            ))}
+          </select>
         </div>
         <div className="mb-3">
           <label className="form-label">Questions</label>
@@ -116,6 +147,7 @@ const CreateTemplate = () => {
                 placeholder="Question"
                 value={question.value}
                 onChange={(e) => handleQuestionChange(index, 'value', e.target.value)}
+                required
               />
               {['checkbox', 'radio'].includes(question.type) && (
                 <textarea

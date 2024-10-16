@@ -22,6 +22,9 @@ const ViewTemplate = () => {
   const [isCommentLoading, setIsCommentLoading] = useState(false);
   const userId = localStorage.getItem('userId');
   const userName = localStorage.getItem('username');
+  const userRole = localStorage.getItem('isAdmin'); // This assumes the role is stored when the user logs in
+  console.log("user role:", userRole);
+
 
   useEffect(() => {
     const fetchTemplate = async () => {
@@ -32,7 +35,7 @@ const ViewTemplate = () => {
 
       try {
         const res = await axios.get(`http://localhost:5000/user/templates/${id}`, config);
-        console.log('Template data fetched:', res.data); 
+        console.log('Template data fetched:', res.data);
         const parsedTags = JSON.parse(res.data.tags || '[]');
 
         const parsedQuestions = res.data.questions.map((question) => {
@@ -64,7 +67,12 @@ const ViewTemplate = () => {
         setLiked(res.data.likedByCurrentUser || false);
         
       } catch (err) {
-        setError(err.response ? err.response.data : 'Error fetching template');
+        if (err.response && err.response.status === 403) {
+          // Handle permission error specifically
+          setError('You do not have permission to view this template.');
+        } else {
+          setError(err.response ? err.response.data : 'Error fetching template');
+        }
         setLoading(false);
       }
     };
@@ -154,6 +162,26 @@ const ViewTemplate = () => {
     });
   };
 
+  const handleDeleteTemplate = async () => {
+    const token = localStorage.getItem('token');
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+  
+    if (window.confirm('Are you sure you want to delete this template?')) {
+      try {
+        await axios.delete(`http://localhost:5000/user/templates/${id}`, config);
+        alert('Template deleted successfully.');
+        // Redirect the user after deletion (you can change this route)
+        window.location.href = '/templates';
+      } catch (error) {
+        console.error('Error deleting template:', error);
+        alert('Failed to delete template');
+      }
+    }
+  };
+  
+
  
 
   if (loading) return <p>Loading...</p>;
@@ -190,11 +218,12 @@ const ViewTemplate = () => {
         Fill the form
       </Link>
 
-      {String(userId) === String(template.creatorId) && (
+      {(String(userId) === String(template.creatorId) || userRole === '1') && (
         <>
           <Link to={`/edit/${id}`} className="btn btn-primary mb-4">Edit the form</Link>
           <Link to={`/responses/${id}`} className="btn btn-primary mb-4">View Responses</Link>
           <Link to={`/access-settings/${id}`} className="btn btn-primary mb-4">Settings</Link>
+          <button onClick={handleDeleteTemplate} className="btn btn-danger mb-4">Delete Template</button>
         </>
       )}
 

@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 const Dashboard = () => {
   const [userTemplates, setUserTemplates] = useState([]);  // User's own templates
   const [otherTemplates, setOtherTemplates] = useState([]);  // Templates created by others
+  const [loading, setLoading] = useState(true);  // Loading state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,33 +15,43 @@ const Dashboard = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-
-      console.log("Logged-in userId:", userId); // Debugging log
-
+  
       try {
-        // Fetch all templates
         const res = await axios.get("http://localhost:5000/routes/user/templates", config);
         const allTemplates = res.data;
-
-        // Log the fetched templates to debug
-        console.log("Fetched templates:", allTemplates);
-
-        // Use user_id instead of creatorId
-        const userTemplates = allTemplates.filter(template => template.user_id == userId); // Ensure types match
+  
+        const userTemplates = allTemplates.filter(template => template.user_id == userId);
         const otherTemplates = allTemplates.filter(template => template.user_id != userId);
-
-        // Debugging logs for template categorization
-        console.log("User's templates:", userTemplates);
-        console.log("Other users' templates:", otherTemplates);
-
+  
         setUserTemplates(userTemplates);
         setOtherTemplates(otherTemplates);
       } catch (err) {
         console.error(err);
+        if (err.response) {
+          console.error("Response data:", err.response.data);
+          console.error("Response status:", err.response.status);
+  
+          if (err.response.status === 403) {
+            // If the user is blocked, log them out
+            localStorage.removeItem("token");
+            localStorage.removeItem("userId");
+            alert("Your account has been blocked. Logging you out.");
+            navigate("/login"); // Redirect to login page
+            return; // Exit early after navigating
+          }
+        }
+      } finally {
+        setLoading(false); // Set loading to false whether success or error
       }
     };
+
     fetchTemplates();
-  }, []);
+  }, [navigate]);
+  
+  // Show a loading message while fetching
+  if (loading) {
+    return <p className="text-center">Loading...</p>;
+  }
 
   return (
     <div className="container mt-5">

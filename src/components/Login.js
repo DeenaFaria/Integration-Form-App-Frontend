@@ -6,9 +6,14 @@ import { jwtDecode } from 'jwt-decode'; // Correctly import jwtDecode
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState(""); // State for messages
+  const [error, setError] = useState(false); // State for error handling
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setMessage(""); // Clear any previous message
+    setError(false); // Reset error state
+
     const body = { email, password };
     try {
       const res = await axios.post("http://localhost:5000/routes/auth/login", body);
@@ -21,8 +26,9 @@ const Login = () => {
       const decoded = jwtDecode(token);
       localStorage.setItem("userId", decoded.id); // Store the userId
       localStorage.setItem("isAdmin", decoded.isAdmin); // Store the isAdmin flag
-          // Debugging Log
-    console.log("is_admin value:", decoded.isAdmin); // Log the is_admin value
+
+      // Debugging Log
+      console.log("is_admin value:", decoded.isAdmin); // Log the is_admin value
 
       // Check if the user is an admin
       if (decoded.isAdmin) {
@@ -34,7 +40,8 @@ const Login = () => {
       }
     } catch (err) {
       console.error(err.response.data);
-      // Optionally, handle error display here (e.g., show a message to the user)
+      setError(true); // Set error state
+      setMessage(err.response.data.message || 'An error occurred. Please try again.'); // Display error message
     }
   };
 
@@ -48,7 +55,10 @@ const Login = () => {
             className="form-control"
             placeholder="Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setMessage(""); // Clear message on input change
+            }}
             required
           />
         </div>
@@ -58,11 +68,21 @@ const Login = () => {
             className="form-control"
             placeholder="Password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setMessage(""); // Clear message on input change
+            }}
             required
           />
         </div>
         <button type="submit" className="btn btn-primary w-100">Login</button>
+
+        {/* Display success or error message */}
+        {message && (
+          <div className={`mt-3 alert ${error ? 'alert-danger' : 'alert-success'}`} role="alert">
+            {message}
+          </div>
+        )}
 
         {/* Add a link to the registration page */}
         <p className="mt-3 text-center">

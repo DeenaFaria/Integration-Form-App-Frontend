@@ -16,6 +16,9 @@ const EditTemplate = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imageUpdated, setImageUpdated] = useState(false); // Track if the image was updated
+  const [selectedTopic, setSelectedTopic] = useState('');
+  const predefinedTopics = ['Education', 'Quiz', 'Other'];
+
 
   useEffect(() => {
     const fetchTemplate = async () => {
@@ -28,17 +31,22 @@ const EditTemplate = () => {
         const res = await axios.get(`http://localhost:5000/user/templates/${id}`, config);
         const parsedTags = JSON.parse(res.data.tags || '[]');
 
-        // Parse options for questions
         const parsedQuestions = res.data.questions.map((question) => {
           if ((question.type === 'radio' || question.type === 'checkbox') && typeof question.options === 'string') {
-            const optionsArray = question.options.split(',').map((option) => ({
-              label: option.trim(),
-              value: option.trim(),
-            }));
-            return { ...question, options: optionsArray };
+            try {
+              const optionsArray = JSON.parse(question.options);
+              return { ...question, options: optionsArray };
+            } catch (error) {
+              const optionsArray = question.options.split(',').map((option) => ({
+                label: option.trim(),
+                value: option.trim(),
+              }));
+              return { ...question, options: optionsArray };
+            }
           }
           return question;
         });
+
 
         setTemplate({
           ...res.data,
@@ -46,6 +54,8 @@ const EditTemplate = () => {
           questions: parsedQuestions,
           image: res.data.image_url || '', // Initialize image field
         });
+        // Set the selected topic based on fetched data
+        setSelectedTopic(res.data.topic || ''); 
         setLoading(false);
       } catch (err) {
         setError(err.response ? err.response.data : 'Error fetching template');
@@ -161,18 +171,27 @@ const EditTemplate = () => {
   };
   
       
-  // Handle drag-and-drop reordering
   const handleDragEnd = (result) => {
     if (!result.destination) return;
+  
     const reorderedQuestions = Array.from(template.questions);
     const [movedQuestion] = reorderedQuestions.splice(result.source.index, 1);
+    
+    // Ensure we are only moving to an existing index
+    if (result.destination.index >= reorderedQuestions.length) {
+      console.warn("Attempting to move to an invalid index");
+      return;
+    }
+  
     reorderedQuestions.splice(result.destination.index, 0, movedQuestion);
-
+  
     setTemplate((prevTemplate) => ({
       ...prevTemplate,
       questions: reorderedQuestions,
     }));
   };
+  
+  
 
   // Save changes
   const handleSave = async () => {
@@ -183,11 +202,14 @@ const EditTemplate = () => {
         'Content-Type': 'multipart/form-data' // Required for file uploads
       },
     };
+    console.log('Token:', token); // Check if the token is available
+
   
     const formData = new FormData();
     formData.append('title', template.title);
     formData.append('description', template.description);
     formData.append('tags', JSON.stringify(template.tags));
+    formData.append('topic', selectedTopic);
   
     // Add the image only if it was updated
     if (imageUpdated) {
@@ -254,10 +276,24 @@ const EditTemplate = () => {
           type="text"
           className="form-control"
           id="formTags"
-         value={template.tags.length > 0 ? template.tags.join(', ') : ''}
+          value={template.tags.join(', ')} // Joining tags for input display
           onChange={handleTagsChange}
           placeholder="Enter tags"
         />
+      </div>
+      <div className="form-group mb-3">
+        <label htmlFor="formTopic" className="form-label">Topic</label>
+        <select
+          className="form-control"
+          id="formTopic"
+          value={selectedTopic}
+          onChange={(e) => setSelectedTopic(e.target.value)}
+        >
+          <option value="">Select a topic</option>
+          {predefinedTopics.map((topic) => (
+            <option key={topic} value={topic}>{topic}</option>
+          ))}
+        </select>
       </div>
 
       <div className="form-group mb-3">
@@ -275,72 +311,70 @@ const EditTemplate = () => {
       <button className="btn btn-primary mb-3" onClick={handleAddQuestion}>Add Question</button>
 
       <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="questions">
-          {(provided) => (
-            <ul className="list-group mb-4" {...provided.droppableProps} ref={provided.innerRef}>
-              {template.questions.map((question, index) => (
-  <Draggable key={question.id} draggableId={question.id.toString()} index={index}>
-  {(provided) => (
-    <li
-      className="list-group-item"
-      ref={provided.innerRef}
-      {...provided.draggableProps}
-      {...provided.dragHandleProps}
-    >
-      <input
-        type="text"
-        className="form-control mb-2"
-        value={question.value}
-        onChange={(e) => handleQuestionChange(question.id, 'value', e.target.value)}
-        placeholder="Edit question"
-      />
-      <select
-        className="form-control mb-2"
-        value={question.type}
-        onChange={(e) => handleQuestionChange(question.id, 'type', e.target.value)}
-      >
-        <option value="text">Text</option>
-        <option value="textarea">Textarea</option>
-        <option value="radio">Radio</option>
-        <option value="checkbox">Checkbox</option>
-        <option value="number">Number</option>
-      </select>
+      <Droppable droppableId="questions">
+        {(provided) => (
+          <ul className="list-group mb-4" {...provided.droppableProps} ref={provided.innerRef}>
+            {template.questions.map((question, index) => (
+              <Draggable key={question.id} draggableId={question.id.toString()} index={index}>
+                {(provided) => (
+                  <li
+                    className="list-group-item"
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                  >
+                    <input
+                      type="text"
+                      className="form-control mb-2"
+                      value={question.value}
+                      onChange={(e) => handleQuestionChange(question.id, 'value', e.target.value)}
+                      placeholder="Edit question"
+                    />
+                    <select
+                      className="form-control mb-2"
+                      value={question.type}
+                      onChange={(e) => handleQuestionChange(question.id, 'type', e.target.value)}
+                    >
+                      <option value="text">Text</option>
+                      <option value="textarea">Textarea</option>
+                      <option value="radio">Radio</option>
+                      <option value="checkbox">Checkbox</option>
+                      <option value="number">Number</option>
+                    </select>
 
-      {question.type === 'radio' || question.type === 'checkbox' ? (
-  <>
-    {question.options && question.options.length > 0 ? (
-      question.options.map((option, optionIndex) => (
-        <div key={optionIndex}>
-          <input
-            type="text"
-            className="form-control"
-            value={option.label}
-            onChange={(e) => handleOptionChange(question.id, optionIndex, e.target.value)}
-          />
-          <button onClick={() => handleDeleteOption(question.id, optionIndex)}>Delete Option</button>
-        </div>
-      ))
-    ) : (
-      <p>No options available. Add some!</p>
-    )}
-    <button onClick={() => handleAddOption(question.id)}>Add Option</button>
-  </>
-) : null}
+                    {question.type === 'radio' || question.type === 'checkbox' ? (
+                      <>
+                        {question.options && question.options.length > 0 ? (
+                          question.options.map((option, optionIndex) => (
+                            <div key={optionIndex}>
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={option.label}
+                                onChange={(e) => handleOptionChange(question.id, optionIndex, e.target.value)}
+                              />
+                              <button onClick={() => handleDeleteOption(question.id, optionIndex)}>Delete Option</button>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No options available. Add some!</p>
+                        )}
+                        <button onClick={() => handleAddOption(question.id)}>Add Option</button>
+                      </>
+                    ) : null}
 
-
-      <button className="btn btn-danger" onClick={() => handleDeleteQuestion(question.id)}>
-        Delete Question
-      </button>
-    </li>
-  )}
-</Draggable>
-
-              ))}
-              {provided.placeholder}
-            </ul>
-          )}
-        </Droppable>
-      </DragDropContext>
+                    <button className="btn btn-danger" onClick={() => handleDeleteQuestion(question.id)}>
+                      Delete Question
+                    </button>
+                  </li>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </ul>
+        )}
+      </Droppable>
+    </DragDropContext>
 
       <button className="btn btn-success" onClick={handleSave}>Save Changes</button>
     </div>
