@@ -1,0 +1,18 @@
+{
+  "searchPlaceholder": "Buscar plantillas...",
+  "switchToLightMode": "Cambiar a Modo Claro",
+  "switchToDarkMode": "Cambiar a Modo Oscuro",
+  "noResultsFound": "No se encontraron resultados",
+  "tagCloud": "Nube de Etiquetas",
+  "noTagsAvailable": "No hay etiquetas disponibles",
+  "latestTemplates": "Plantillas Recientes",
+  "by": "Por",
+  "viewTemplate": "Ver Plantilla",
+  "noTemplatesAvailable": "No hay plantillas disponibles",
+  "popularTemplates": "Plantillas Más Populares",
+  "title": "Título",
+  "numberOfFilledForms": "Número de Formularios Llenos",
+  "noPopularTemplatesAvailable": "No hay plantillas populares disponibles",
+  "loginMessage": "Para crear nuevas plantillas, por favor",
+  "logIn": "Iniciar sesión"
+}

@@ -12,10 +12,15 @@ import SuccessPage from './components/SuccessPage';
 import ViewResponses from './components/VewResponses';
 import AdminPanel from './components/AdminPanel';
 import AccessSettings from './components/AccessSettings';
+import { DarkModeProvider } from './context/DarkModeContext';
+import Layout from './components/Layout';
+import './App.css';
 
 function App() {
   return (
+    <DarkModeProvider>
     <Router>
+      <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -31,7 +36,9 @@ function App() {
         <Route path="/responses/:id" element={<ViewResponses/>}/>
 
       </Routes>
+      </Layout>
     </Router>
+    </DarkModeProvider>
   );
 }
 

@@ -1,0 +1,18 @@
+{
+  "searchPlaceholder": "Search templates...",
+  "switchToLightMode": "Switch to Light Mode",
+  "switchToDarkMode": "Switch to Dark Mode",
+  "noResultsFound": "No results found",
+  "tagCloud": "Tag Cloud",
+  "noTagsAvailable": "No tags available",
+  "latestTemplates": "Latest Templates",
+  "by": "By",
+  "viewTemplate": "View Template",
+  "noTemplatesAvailable": "No templates available",
+  "popularTemplates": "Top 5 Most Popular Templates",
+  "title": "Title",
+  "numberOfFilledForms": "Number of Filled Forms",
+  "noPopularTemplatesAvailable": "No popular templates available",
+  "loginMessage": "To create new templates, please",
+  "logIn": "Log in"
+}
