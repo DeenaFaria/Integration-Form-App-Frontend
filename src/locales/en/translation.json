@@ -14,5 +14,42 @@
   "numberOfFilledForms": "Number of Filled Forms",
   "noPopularTemplatesAvailable": "No popular templates available",
   "loginMessage": "To create new templates, please",
-  "logIn": "Log in"
+  "logIn": "Log in",
+
+  "login": {
+    "title": "Login",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "loginButton": "Login",
+    "registerPrompt": "Don't have an account? Register here",
+    "errorMessage": "An error occurred. Please try again."
+  },
+  "view": {
+    "loading": "Loading...",
+    "error_permission": "You do not have permission to view this template.",
+    "error_fetching": "Error fetching template.",
+    "title_label": "Form Title",
+    "title_placeholder": "Enter form title",
+    "description_label": "Description",
+    "description_placeholder": "Enter form description",
+    "questions_heading": "Questions",
+    "no_questions": "No questions available",
+    "like_button_liked": "❤️ Liked",
+    "like_button_unliked": "♡ Like",
+    "likes_count": "({{likes}})",
+    "comment_placeholder": "Add a comment...",
+    "comment_submit_button": "Submit",
+    "submitting": "Submitting...",
+    "comments_heading": "Comments",
+    "no_comments": "No comments yet.",
+    "posted_on": "Posted on",
+    "fill_form_button": "Fill the form",
+    "edit_form_button": "Edit the form",
+    "view_responses_button": "View Responses",
+    "settings_button": "Settings",
+    "delete_template_button": "Delete Template",
+    "delete_confirmation": "Are you sure you want to delete this template?",
+    "delete_success": "Template deleted successfully.",
+    "delete_failure": "Failed to delete template"
+  }
 }

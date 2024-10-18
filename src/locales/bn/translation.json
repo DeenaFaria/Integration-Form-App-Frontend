@@ -14,6 +14,43 @@
     "numberOfFilledForms": "পূরণকৃত ফর্মের সংখ্যা",
     "noPopularTemplatesAvailable": "কোন জনপ্রিয় টেমপ্লেট উপলব্ধ নেই",
     "loginMessage": "নতুন টেমপ্লেট তৈরি করতে, দয়া করে",
-    "logIn": "লগ ইন করুন"
+    "logIn": "লগ ইন করুন",
+    "login": {
+  "title": "লগইন",
+  "emailPlaceholder": "ইমেইল",
+  "passwordPlaceholder": "পাসওয়ার্ড",
+  "loginButton": "লগইন",
+  "registerPrompt": "অ্যাকাউন্ট নেই? এখানে নিবন্ধন করুন",
+  "errorMessage": "একটি ত্রুটি ঘটেছে। আবার চেষ্টা করুন।"
+},
+"view": {
+  "loading": "লোড হচ্ছে...",
+  "error_permission": "আপনার এই টেমপ্লেট দেখার অনুমতি নেই।",
+  "error_fetching": "টেমপ্লেট আনতে ত্রুটি ঘটেছে।",
+  "title_label": "ফর্মের শিরোনাম",
+  "title_placeholder": "ফর্মের শিরোনাম লিখুন",
+  "description_label": "বর্ণনা",
+  "description_placeholder": "ফর্মের বর্ণনা লিখুন",
+  "questions_heading": "প্রশ্নাবলী",
+  "no_questions": "কোন প্রশ্ন পাওয়া যায়নি",
+  "like_button_liked": "❤️ লাইকড",
+  "like_button_unliked": "♡ লাইক",
+  "likes_count": "({{likes}})",
+  "comment_placeholder": "একটি মন্তব্য যোগ করুন...",
+  "comment_submit_button": "জমা দিন",
+  "submitting": "জমা দেওয়া হচ্ছে...",
+  "comments_heading": "মন্তব্যসমূহ",
+  "no_comments": "এখনও কোনো মন্তব্য নেই।",
+  "posted_on": "পোস্ট করা হয়েছে",
+  "fill_form_button": "ফর্ম পূরণ করুন",
+  "edit_form_button": "ফর্ম সম্পাদনা করুন",
+  "view_responses_button": "উত্তরগুলি দেখুন",
+  "settings_button": "সেটিংস",
+  "delete_template_button": "টেমপ্লেট মুছুন",
+  "delete_confirmation": "আপনি কি এই টেমপ্লেটটি মুছে ফেলতে চান?",
+  "delete_success": "টেমপ্লেট সফলভাবে মুছে ফেলা হয়েছে।",
+  "delete_failure": "টেমপ্লেট মুছে ফেলতে ব্যর্থ হয়েছে"
+}
+
   }
   

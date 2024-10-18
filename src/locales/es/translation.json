@@ -14,5 +14,42 @@
   "numberOfFilledForms": "Número de Formularios Llenos",
   "noPopularTemplatesAvailable": "No hay plantillas populares disponibles",
   "loginMessage": "Para crear nuevas plantillas, por favor",
-  "logIn": "Iniciar sesión"
+  "logIn": "Iniciar sesión",
+  "login": {
+  "title": "Iniciar sesión",
+  "emailPlaceholder": "Correo electrónico",
+  "passwordPlaceholder": "Contraseña",
+  "loginButton": "Iniciar sesión",
+  "registerPrompt": "¿No tienes una cuenta? Regístrate aquí",
+  "errorMessage": "Ocurrió un error. Por favor, inténtalo de nuevo."
+},
+"view": {
+    "loading": "Cargando...",
+    "error_permission": "No tienes permiso para ver esta plantilla.",
+    "error_fetching": "Error al obtener la plantilla.",
+    "title_label": "Título del formulario",
+    "title_placeholder": "Ingrese el título del formulario",
+    "description_label": "Descripción",
+    "description_placeholder": "Ingrese la descripción del formulario",
+    "questions_heading": "Preguntas",
+    "no_questions": "No hay preguntas disponibles",
+    "like_button_liked": "❤️ Me gusta",
+    "like_button_unliked": "♡ Me gusta",
+    "likes_count": "({{likes}})",
+    "comment_placeholder": "Agrega un comentario...",
+    "comment_submit_button": "Enviar",
+    "submitting": "Enviando...",
+    "comments_heading": "Comentarios",
+    "no_comments": "Aún no hay comentarios.",
+    "posted_on": "Publicado en",
+    "fill_form_button": "Rellenar el formulario",
+    "edit_form_button": "Editar el formulario",
+    "view_responses_button": "Ver respuestas",
+    "settings_button": "Ajustes",
+    "delete_template_button": "Eliminar plantilla",
+    "delete_confirmation": "¿Estás seguro de que quieres eliminar esta plantilla?",
+    "delete_success": "Plantilla eliminada con éxito.",
+    "delete_failure": "Error al eliminar la plantilla"
+  }
+
 }

@@ -98,7 +98,7 @@ const EditTemplate = () => {
 
   // Handle adding a new question
   const handleAddQuestion = () => {
-    const newQuestion = { id: Date.now(), type: 'text', value: '', options: [] }; // Initialize with empty options array
+    const newQuestion = { id: Date.now(), type: 'text', value: '', options: [], showQuestion: true }; // Initialize with empty options array
     setTemplate((prevTemplate) => ({
       ...prevTemplate,
       questions: [...prevTemplate.questions, newQuestion],
@@ -106,18 +106,19 @@ const EditTemplate = () => {
   };
   
 
-  // Handle question changes (edit question text, type, or options)
-  const handleQuestionChange = (questionId, key, value) => {
-    setTemplate((prevTemplate) => {
-      const updatedQuestions = prevTemplate.questions.map((question) => {
-        if (question.id === questionId) {
-          return { ...question, [key]: value };
-        }
-        return question;
-      });
-      return { ...prevTemplate, questions: updatedQuestions };
+
+// Handle question changes (edit question text, type, or options)
+const handleQuestionChange = (questionId, key, value) => {
+  setTemplate((prevTemplate) => {
+    const updatedQuestions = prevTemplate.questions.map((question) => {
+      if (question.id === questionId) {
+        return { ...question, [key]: value }; // This will update the specific property
+      }
+      return question;
     });
-  };
+    return { ...prevTemplate, questions: updatedQuestions };
+  });
+};
 
   // Handle deleting a question
   const handleDeleteQuestion = (questionId) => {
@@ -221,6 +222,7 @@ const EditTemplate = () => {
       formData.append(`questions[${index}][id]`, question.id);
       formData.append(`questions[${index}][type]`, question.type);
       formData.append(`questions[${index}][value]`, question.value);
+      formData.append(`questions[${index}][showQuestion]`, question.showQuestion); 
   
       // Safeguard to ensure options are processed only if they exist and are an array
       if (Array.isArray(question.options)) {
@@ -323,6 +325,19 @@ const EditTemplate = () => {
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
+                  <div className="form-check mt-1">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id={`showQuestion-${index}`}
+                      checked={question.showQuestion} // Ensure this links to the question's showQuestion state
+                      onChange={(e) => handleQuestionChange(question.id, 'showQuestion', e.target.checked)} // Use question.id instead of index
+                    />
+                    <label className="form-check-label" htmlFor={`showQuestion-${index}`}>
+                      Show Question
+                    </label>
+                  </div>
+
                     <input
                       type="text"
                       className="form-control mb-2"

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const ViewTemplate = () => {
   const { id } = useParams();
+   const { t } = useTranslation(); // Initialize useTranslation hook
   const [template, setTemplate] = useState({
     title: '',
     description: '',
@@ -189,28 +191,14 @@ const ViewTemplate = () => {
 
   return (
     <div className="container mt-5">
-      <button onClick={handleLike} className={`btn ${liked ? 'btn-danger' : 'btn-outline-primary'}`}>
-        {liked ? '❤️ Liked' : '♡ Like'} ({likes})
-      </button>
+
       <h1>{template.title}</h1>
 
-      {/* Comment Input */}
-      <div className="input-group mb-3">
-        <input
-          type="text"
-          className="form-control"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
-        />
-        <button onClick={handleAddComment} className="btn btn-primary" disabled={isCommentLoading}>
-          {isCommentLoading ? 'Submitting...' : 'Submit'}
-        </button>
-      </div>
+
 
       {template.imageUrl && (
         <div className="image-container mb-4">
-          <img src={template.imageUrl} alt="Template Visual" style={{ maxWidth: '100%', height: 'auto' }} />
+          <img src={template.imageUrl} alt="Template Visual" style={{ width: '300px', height: 'auto' }} />
         </div>
       )}
 
@@ -275,7 +263,25 @@ const ViewTemplate = () => {
           )}
         </ul>
       </form>
+ <div className="input-group mb-3">
+ <button onClick={handleLike} className={`btn ${liked ? 'btn-danger' : 'btn-outline-primary'}`}>
+        {liked ? '❤️ Liked' : '♡ Like'} ({likes})
+      </button>
+ </div>
 
+            {/* Comment Input */}
+            <div className="input-group mb-3">
+        <input
+          type="text"
+          className="form-control"
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="Add a comment..."
+        />
+        <button onClick={handleAddComment} className="btn btn-primary" disabled={isCommentLoading}>
+          {isCommentLoading ? 'Submitting...' : 'Submit'}
+        </button>
+      </div>
       <h3>Comments</h3>
       {comments.length > 0 ? (
         comments.map(comment => (

@@ -4,7 +4,7 @@ import axios from 'axios';
 const CreateTemplate = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [questions, setQuestions] = useState([{ type: 'text', value: '', options: '' }]);
+  const [questions, setQuestions] = useState([{ type: 'text', value: '', options: '', showQuestion: true }]);
   const [tags, setTags] = useState('');
   const [selectedTopic, setSelectedTopic] = useState(''); // New state for selected topic
   const [image, setImage] = useState(null); // State for image
@@ -22,10 +22,12 @@ const CreateTemplate = () => {
     newQuestions[index][field] = value;
     setQuestions(newQuestions);
   };
+  
 
   const addQuestion = () => {
-    setQuestions([...questions, { type: 'text', value: '', options: '' }]);
+    setQuestions([...questions, { type: 'text', value: '', options: '', showQuestion: true }]);
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,6 +50,7 @@ const CreateTemplate = () => {
       formData.append(`questions[${index}][type]`, question.type);
       formData.append(`questions[${index}][value]`, question.value);
       formData.append(`questions[${index}][options]`, question.options);
+      formData.append(`questions[${index}][showQuestion]`, question.showQuestion); 
     });
 
     // Append the image file
@@ -157,6 +160,18 @@ const CreateTemplate = () => {
                   onChange={(e) => handleQuestionChange(index, 'options', e.target.value)}
                 />
               )}
+                 <div className="form-check mt-1">
+      <input
+        type="checkbox"
+        className="form-check-input"
+        id={`showQuestion-${index}`}
+        checked={question.showQuestion}
+        onChange={(e) => handleQuestionChange(index, 'showQuestion', e.target.checked)}
+      />
+      <label className="form-check-label" htmlFor={`showQuestion-${index}`}>
+        Show Question
+      </label>
+    </div>
             </div>
           ))}
           <button type="button" className="btn btn-secondary" onClick={addQuestion}>Add Question</button>

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 import { jwtDecode } from 'jwt-decode'; // Correctly import jwtDecode
 
 const Login = () => {
+  const { t } = useTranslation(); // Initialize useTranslation hook
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState(""); // State for messages
@@ -41,19 +43,19 @@ const Login = () => {
     } catch (err) {
       console.error(err.response.data);
       setError(true); // Set error state
-      setMessage(err.response.data.message || 'An error occurred. Please try again.'); // Display error message
+      setMessage(err.response.data.message || t('login.errorMessage')); // Use translation for error message
     }
   };
 
   return (
     <div className="container mt-5">
-      <h2 className="text-center mb-4">Login</h2>
+      <h2 className="text-center mb-4">{t('login.title')}</h2>
       <form onSubmit={handleLogin} className="shadow p-4 rounded bg-light">
         <div className="mb-3">
           <input
             type="email"
             className="form-control"
-            placeholder="Email"
+            placeholder={t('login.emailPlaceholder')} // Use translation
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
@@ -66,7 +68,7 @@ const Login = () => {
           <input
             type="password"
             className="form-control"
-            placeholder="Password"
+            placeholder={t('login.passwordPlaceholder')} // Use translation
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
@@ -75,7 +77,7 @@ const Login = () => {
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary w-100">Login</button>
+        <button type="submit" className="btn btn-primary w-100">{t('login.loginButton')}</button>
 
         {/* Display success or error message */}
         {message && (
@@ -86,7 +88,7 @@ const Login = () => {
 
         {/* Add a link to the registration page */}
         <p className="mt-3 text-center">
-          Don't have an account? <Link to="/register" className="link-primary">Register here</Link>
+          {t('login.registerPrompt')} <Link to="/register" className="link-primary">{t('login.registerPrompt')}</Link>
         </p>
       </form>
     </div>

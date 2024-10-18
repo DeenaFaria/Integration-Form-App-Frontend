@@ -53,7 +53,11 @@ const ViewResponses = () => {
               <h5>Response {index + 1}</h5>
               <p><strong>Submitted At:</strong> {new Date(response.submitted_at).toLocaleString()}</p>
               <p><strong>Response Data:</strong></p>
-              <pre>{JSON.stringify(response.response_data, null, 2)}</pre>
+              <ul>
+                {Object.entries(response.response_data).map(([key, value]) => (
+                  <li key={key}> {value}</li>
+                ))}
+              </ul>
             </li>
           ))
         ) : (
