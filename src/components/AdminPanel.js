@@ -19,7 +19,7 @@ const AdminPanel = () => {
         const config = {
           headers: { Authorization: `Bearer ${token}` },
         };
-        const res = await axios.get('http://localhost:5000/admin/users', config);
+        const res = await axios.get('https://form-app-backend-vz4z.onrender.com/admin/users', config);
         setUsers(res.data);
         setLoading(false);
       } catch (err) {
@@ -37,7 +37,7 @@ const AdminPanel = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      await axios.post(`http://localhost:5000/admin/block/${userId}`, {}, config);
+      await axios.post(`https://form-app-backend-vz4z.onrender.com/admin/block/${userId}`, {}, config);
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === userId ? { ...user, is_blocked: true } : user
@@ -54,7 +54,7 @@ const AdminPanel = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      await axios.post(`http://localhost:5000/admin/unblock/${userId}`, {}, config);
+      await axios.post(`https://form-app-backend-vz4z.onrender.com/admin/unblock/${userId}`, {}, config);
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === userId ? { ...user, is_blocked: false } : user
@@ -71,7 +71,7 @@ const AdminPanel = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      await axios.delete(`http://localhost:5000/admin/delete/${userId}`, config);
+      await axios.delete(`https://form-app-backend-vz4z.onrender.com/admin/delete/${userId}`, config);
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
     } catch (err) {
       setError('Error deleting user');
@@ -84,7 +84,7 @@ const AdminPanel = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      await axios.post(`http://localhost:5000/admin/promote/${userId}`, {}, config);
+      await axios.post(`https://form-app-backend-vz4z.onrender.com/admin/promote/${userId}`, {}, config);
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === userId ? { ...user, is_admin: true } : user
@@ -101,7 +101,7 @@ const AdminPanel = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      await axios.post(`http://localhost:5000/admin/demote/${userId}`, {}, config);
+      await axios.post(`https://form-app-backend-vz4z.onrender.com/admin/demote/${userId}`, {}, config);
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
           user.id === userId ? { ...user, is_admin: false } : user

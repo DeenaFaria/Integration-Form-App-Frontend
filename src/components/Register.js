@@ -18,7 +18,7 @@ const Register = () => {
     const body = { username, email, password }; // Change name to username
 
     try {
-        const res = await axios.post("http://localhost:5000/routes/auth/register", body);
+        const res = await axios.post("https://form-app-backend-vz4z.onrender.com/routes/auth/register", body);
 
       localStorage.setItem("token", res.data.token); // Store token
       window.location = "/login"; // Redirect to dashboard after registration

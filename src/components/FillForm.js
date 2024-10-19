@@ -18,7 +18,7 @@ const FillForm = () => {
       };
 
       try {
-        const res = await axios.get(`http://localhost:5000/user/templates/${id}`, config);
+        const res = await axios.get(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}`, config);
         const parsedTags = JSON.parse(res.data.tags || '[]');
 
 // Parse options for questions
@@ -71,7 +71,7 @@ const parsedQuestions = res.data.questions.map((question) => {
     };
 
     try {
-      const response = await axios.post(`http://localhost:5000/user/submitForm/${id}`, { responses: formData }, config);
+      const response = await axios.post(`https://form-app-backend-vz4z.onrender.com/user/submitForm/${id}`, { responses: formData }, config);
       console.log('Response Data:', response.data); // Log response data for debugging
       navigate('/success', { state: { responses: response.data } }); // Pass the response data
     } catch (err) {

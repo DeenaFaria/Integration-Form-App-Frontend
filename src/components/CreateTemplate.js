@@ -59,7 +59,7 @@ const CreateTemplate = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/user/templates', formData, {
+      const response = await axios.post('https://form-app-backend-vz4z.onrender.com/user/templates', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data', // Important for file upload

@@ -17,13 +17,13 @@ const AccessSettings = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      const response = await axios.get('http://localhost:5000/routes/user/users', config);
+      const response = await axios.get('https://form-app-backend-vz4z.onrender.com/routes/user/users', config);
       setUsers(response.data);
     };
 
     const fetchAccessSettings = async () => {
      
-      const response = await axios.get(`http://localhost:5000/routes/user/access-settings/${id}`);
+      const response = await axios.get(`https://form-app-backend-vz4z.onrender.com/routes/user/access-settings/${id}`);
       const allowed = response.data.filter(setting => setting.can_access).map(setting => setting.user_id);
       const denied = response.data.filter(setting => !setting.can_access).map(setting => setting.user_id);
       setAllowedUsers([...new Set(allowed)]); // Ensure no duplicates
@@ -39,7 +39,7 @@ const AccessSettings = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-    await axios.post('http://localhost:5000/routes/user/access-settings/', { templateId: id, userId, canAccess }, config);
+    await axios.post('https://form-app-backend-vz4z.onrender.com/routes/user/access-settings/', { templateId: id, userId, canAccess }, config);
 
     if (canAccess) {
       // Move user to allowedUsers, remove from deniedUsers

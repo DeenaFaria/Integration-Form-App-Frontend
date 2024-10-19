@@ -28,7 +28,7 @@ const EditTemplate = () => {
       };
 
       try {
-        const res = await axios.get(`http://localhost:5000/user/templates/${id}`, config);
+        const res = await axios.get(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}`, config);
         const parsedTags = JSON.parse(res.data.tags || '[]');
 
         const parsedQuestions = res.data.questions.map((question) => {
@@ -234,7 +234,7 @@ const handleQuestionChange = (questionId, key, value) => {
     });
   
     try {
-      await axios.put(`http://localhost:5000/user/templates/${id}`, formData, config);
+      await axios.put(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}`, formData, config);
       alert('Template saved successfully');
     } catch (err) {
       setError(err.response ? err.response.data : 'Error saving template');

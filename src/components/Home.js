@@ -20,7 +20,7 @@ const Home = () => {
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/routes/user/latest");
+        const res = await axios.get("https://form-app-backend-vz4z.onrender.com/routes/user/latest");
         setTemplates(res.data);
       } catch (err) {
         console.error(err);
@@ -32,7 +32,7 @@ const Home = () => {
   useEffect(() => {
     const fetchPopularTemplates = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/routes/user/most-liked");
+        const res = await axios.get("https://form-app-backend-vz4z.onrender.com/routes/user/most-liked");
         setPopularTemplates(res.data);
       } catch (err) {
         console.error(err);
@@ -44,7 +44,7 @@ const Home = () => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/routes/user/tags");
+        const res = await axios.get("https://form-app-backend-vz4z.onrender.com/routes/user/tags");
         setTags(res.data);
       } catch (err) {
         console.error(err);
@@ -66,7 +66,7 @@ const Home = () => {
   };
 
   const fetchSearchResults = (term) => {
-    axios.get(`http://localhost:5000/routes/user/search?query=${term}`)
+    axios.get(`https://form-app-backend-vz4z.onrender.com/routes/user/search?query=${term}`)
       .then(res => {
         setSearchResults(res.data.templates);
       })

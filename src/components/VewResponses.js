@@ -20,12 +20,12 @@ const ViewResponses = () => {
 
       try {
         // Fetch form responses
-        const res = await axios.get(`http://localhost:5000/routes/user/formResponses/${id}`, config);
+        const res = await axios.get(`https://form-app-backend-vz4z.onrender.com/routes/user/formResponses/${id}`, config);
         console.log('Fetched responses:', res.data); // Log fetched responses
         setResponses(res.data);
 
         // Fetch analytics data
-        const analyticsRes = await axios.get(`http://localhost:5000/routes/user/analytics/templates/${id}`, config);
+        const analyticsRes = await axios.get(`https://form-app-backend-vz4z.onrender.com/routes/user/analytics/templates/${id}`, config);
         console.log('Fetched analytics data:', analyticsRes.data); // Log fetched analytics data
         setAnalyticsData(analyticsRes.data);
       } catch (err) {

@@ -18,7 +18,7 @@ const Login = () => {
 
     const body = { email, password };
     try {
-      const res = await axios.post("http://localhost:5000/routes/auth/login", body);
+      const res = await axios.post("https://form-app-backend-vz4z.onrender.com/routes/auth/login", body);
 
       // Store the token
       const token = res.data.token;

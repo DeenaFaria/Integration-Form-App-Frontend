@@ -17,7 +17,7 @@ const Dashboard = () => {
       };
   
       try {
-        const res = await axios.get("http://localhost:5000/routes/user/templates", config);
+        const res = await axios.get("https://form-app-backend-vz4z.onrender.com/routes/user/templates", config);
         const allTemplates = res.data;
   
         const userTemplates = allTemplates.filter(template => template.user_id == userId);
