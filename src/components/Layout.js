@@ -30,7 +30,7 @@ const Layout = ({ children }) => {
   // Fetch search results from the API
   const fetchSearchResults = (term) => {
     console.log(`Fetching results for: ${term}`);
-    axios.get(`http://localhost:5000/routes/user/search?query=${term}`)
+    axios.get(`https://form-app-backend-vz4z.onrender.com/routes/user/search?query=${term}`)
       .then(res => {
         console.log(res.data); // Log the full response to check the structure
         setSearchResults(res.data.templates || []); // Fallback to empty array if templates are not found
