@@ -16,32 +16,26 @@ const ViewResponses = () => {
         headers: { Authorization: `Bearer ${token}` },
       };
 
-      console.log('Fetching responses with token:', token); // Log the token being used
-
       try {
         // Fetch form responses
         const res = await axios.get(`https://form-app-backend-vz4z.onrender.com/routes/user/formResponses/${id}`, config);
-        console.log('Fetched responses:', res.data); // Log fetched responses
         setResponses(res.data);
 
         // Fetch analytics data
         const analyticsRes = await axios.get(`https://form-app-backend-vz4z.onrender.com/routes/user/analytics/templates/${id}`, config);
-        console.log('Fetched analytics data:', analyticsRes.data); // Log fetched analytics data
         setAnalyticsData(analyticsRes.data);
       } catch (err) {
-        console.error('Error fetching data:', err); // Log the error for more insight
         setError(err.response ? err.response.data : 'Error fetching data');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchResponses(); // Call the function to fetch responses and analytics
+    fetchResponses();
   }, [id]);
 
-  if (loading) return <p>Loading...</p>; // Loading state
+  if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-danger">{typeof error === 'string' ? error : 'An unexpected error occurred.'}</p>;
-
 
   return (
     <div className="container mt-5">
@@ -55,7 +49,14 @@ const ViewResponses = () => {
               <p><strong>Response Data:</strong></p>
               <ul>
                 {Object.entries(response.response_data).map(([key, value]) => (
-                  <li key={key}> {value}</li>
+                  <li key={key}> 
+                    {/* Check if the response value is an object (for complex data) or display as string */}
+                    {typeof value === 'object' ? (
+                      <pre>{JSON.stringify(value, null, 2)}</pre> // Display complex objects as JSON
+                    ) : (
+                      value // Display string data directly
+                    )}
+                  </li>
                 ))}
               </ul>
             </li>
