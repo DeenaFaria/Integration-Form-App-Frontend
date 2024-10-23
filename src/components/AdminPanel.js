@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'; 
 
 const AdminPanel = () => {
   const [users, setUsers] = useState([]);
@@ -117,6 +118,16 @@ const AdminPanel = () => {
 
   return (
     <div className="container mt-5">
+      {/* Navbar for admin links */}
+      <nav className="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <Link className="navbar-brand" to="/dashboard">
+    Go to Dashboard <i className="fas fa-arrow-right ml-2"></i>
+  </Link>
+</nav>
+
+
+
+
       <h2>Admin Panel</h2>
       <table className="table table-striped">
         <thead>

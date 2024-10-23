@@ -17,7 +17,7 @@ const Dashboard = () => {
       };
   
       try {
-        const res = await axios.get("https://form-app-backend-vz4z.onrender.com/routes/user/templates", config);
+        const res = await axios.get("/routes/user/templates", config);
         const allTemplates = res.data;
   
         const userTemplates = allTemplates.filter(template => template.user_id == userId);
@@ -86,7 +86,7 @@ const Dashboard = () => {
           {otherTemplates.map((template) => (
             <li key={template.id} className="list-group-item">
               <Link to={`/template/${template.id}`} className="text-decoration-none">
-                {template.title} (by {template.creator || 'Anonymous'})
+                {template.title} (by {template.creator_name || 'Anonymous'})
               </Link>
             </li>
           ))}

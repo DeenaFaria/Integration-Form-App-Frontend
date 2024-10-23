@@ -36,7 +36,7 @@ const ViewTemplate = () => {
       };
 
       try {
-        const res = await axios.get(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}`, config);
+        const res = await axios.get(`/user/templates/${id}`, config);
         console.log('Template data fetched:', res.data);
         const parsedTags = JSON.parse(res.data.tags || '[]');
 
@@ -85,7 +85,7 @@ const ViewTemplate = () => {
 
   const fetchComments = async (templateId) => {
     try {
-      const response = await axios.get(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}/comments`);
+      const response = await axios.get(`/user/templates/${id}/comments`);
       console.log("Comments for Template:", response.data);
       setComments(response.data || []);
     } catch (error) {
@@ -102,11 +102,11 @@ const ViewTemplate = () => {
   
     try {
       if (liked) {
-        const res = await axios.delete(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}/unlike`, config);
+        const res = await axios.delete(`/user/templates/${id}/unlike`, config);
         setLikes(res.data.likes_count); // Update likes count from server response
         console.log("Likes count: ", res.data.likes_count);
       } else {
-        const res = await axios.post(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}/like`, {}, config);
+        const res = await axios.post(`/user/templates/${id}/like`, {}, config);
         setLikes(res.data.likes_count); // Update likes count from server response
       }
       setLiked(!liked);
@@ -127,7 +127,7 @@ const ViewTemplate = () => {
     };
   
     try {
-      const res = await axios.post(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}/comments`, { text: newComment }, config); // No need to send userId
+      const res = await axios.post(`/user/templates/${id}/comments`, { text: newComment }, config); // No need to send userId
       setComments((prevComments) => [...prevComments, res.data]); // Update with the new comment data
       setNewComment(''); // Clear the comment input
     } catch (error) {
@@ -172,7 +172,7 @@ const ViewTemplate = () => {
   
     if (window.confirm('Are you sure you want to delete this template?')) {
       try {
-        await axios.delete(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}`, config);
+        await axios.delete(`/user/templates/${id}`, config);
         alert('Template deleted successfully.');
         // Redirect the user after deletion (you can change this route)
         window.location.href = '/templates';
@@ -202,18 +202,29 @@ const ViewTemplate = () => {
         </div>
       )}
 
-      <Link to={`/fill-form/${id}`} className="btn btn-primary mb-4">
-        Fill the form
-      </Link>
+<div className="action-buttons mb-4">
+  <Link to={`/fill-form/${id}`} className="btn btn-primary me-2">
+    <i className="fas fa-edit"></i> Fill the Form
+  </Link>
 
-      {(String(userId) === String(template.creatorId) || userRole === '1') && (
-        <>
-          <Link to={`/edit/${id}`} className="btn btn-primary mb-4">Edit the form</Link>
-          <Link to={`/responses/${id}`} className="btn btn-primary mb-4">View Responses</Link>
-          <Link to={`/access-settings/${id}`} className="btn btn-primary mb-4">Settings</Link>
-          <button onClick={handleDeleteTemplate} className="btn btn-danger mb-4">Delete Template</button>
-        </>
-      )}
+  {(String(userId) === String(template.creatorId) || userRole === '1') && (
+    <div className="btn-group" role="group" aria-label="Template Actions">
+      <Link to={`/edit/${id}`} className="btn btn-warning me-2">
+        <i className="fas fa-pencil-alt"></i> Edit Template
+      </Link>
+      <Link to={`/responses/${id}`} className="btn btn-info me-2">
+        <i className="fas fa-list-alt"></i> View Responses
+      </Link>
+      <Link to={`/access-settings/${id}`} className="btn btn-success me-2">
+        <i className="fas fa-cog"></i> Access Settings
+      </Link>
+      <button onClick={handleDeleteTemplate} className="btn btn-danger">
+        <i className="fas fa-trash"></i> Delete Template
+      </button>
+    </div>
+  )}
+</div>
+
 
       <form>
         <div className="form-group mb-3">
