@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next'; // Import useTranslation
 import { jwtDecode } from 'jwt-decode'; // Correctly import jwtDecode
+const api = process.env.REACT_APP_API_URL;
 
 const Login = () => {
   const { t } = useTranslation(); // Initialize useTranslation hook
@@ -18,7 +19,7 @@ const Login = () => {
 
     const body = { email, password };
     try {
-      const res = await axios.post("https://form-app-backend-vz4z.onrender.com/routes/auth/login", body);
+      const res = await axios.post(`${api}/routes/auth/login`, body);
 
       // Store the token
       const token = res.data.token;

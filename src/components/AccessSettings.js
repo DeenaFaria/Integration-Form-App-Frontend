@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Select from 'react-select';
+const api = process.env.REACT_APP_API_URL;
 
 const AccessSettings = () => {
   const { id } = useParams(); // Extract id from URL parameters
@@ -17,13 +18,13 @@ const AccessSettings = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      const response = await axios.get('https://form-app-backend-vz4z.onrender.com/routes/user/users', config);
+      const response = await axios.get(`${api}/routes/user/users`, config);
       setUsers(response.data);
     };
 
     const fetchAccessSettings = async () => {
      
-      const response = await axios.get(`https://form-app-backend-vz4z.onrender.com/routes/user/access-settings/${id}`);
+      const response = await axios.get(`${api}/routes/user/access-settings/${id}`);
       const allowed = response.data.filter(setting => setting.can_access).map(setting => setting.user_id);
       const denied = response.data.filter(setting => !setting.can_access).map(setting => setting.user_id);
       setAllowedUsers([...new Set(allowed)]); // Ensure no duplicates
@@ -39,7 +40,7 @@ const AccessSettings = () => {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-    await axios.post('https://form-app-backend-vz4z.onrender.com/routes/user/access-settings/', { templateId: id, userId, canAccess }, config);
+    await axios.post(`${api}/routes/user/access-settings/`, { templateId: id, userId, canAccess }, config);
 
     if (canAccess) {
       // Move user to allowedUsers, remove from deniedUsers

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'; // Import useTranslation
+const api = process.env.REACT_APP_API_URL;
 
 const ViewTemplate = () => {
   const { id } = useParams();
@@ -36,7 +37,7 @@ const ViewTemplate = () => {
       };
 
       try {
-        const res = await axios.get(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}`, config);
+        const res = await axios.get(`${api}/user/templates/${id}`, config);
         console.log('Template data fetched:', res.data);
         const parsedTags = JSON.parse(res.data.tags || '[]');
 
@@ -85,7 +86,7 @@ const ViewTemplate = () => {
 
   const fetchComments = async (templateId) => {
     try {
-      const response = await axios.get(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}/comments`);
+      const response = await axios.get(`${api}/user/templates/${id}/comments`);
       console.log("Comments for Template:", response.data);
       setComments(response.data || []);
     } catch (error) {
@@ -102,11 +103,11 @@ const ViewTemplate = () => {
   
     try {
       if (liked) {
-        const res = await axios.delete(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}/unlike`, config);
+        const res = await axios.delete(`${api}/user/templates/${id}/unlike`, config);
         setLikes(res.data.likes_count); // Update likes count from server response
         console.log("Likes count: ", res.data.likes_count);
       } else {
-        const res = await axios.post(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}/like`, {}, config);
+        const res = await axios.post(`${api}/user/templates/${id}/like`, {}, config);
         setLikes(res.data.likes_count); // Update likes count from server response
       }
       setLiked(!liked);
@@ -127,7 +128,7 @@ const ViewTemplate = () => {
     };
   
     try {
-      const res = await axios.post(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}/comments`, { text: newComment }, config); // No need to send userId
+      const res = await axios.post(`${api}/user/templates/${id}/comments`, { text: newComment }, config); // No need to send userId
       setComments((prevComments) => [...prevComments, res.data]); // Update with the new comment data
       setNewComment(''); // Clear the comment input
     } catch (error) {
@@ -172,7 +173,7 @@ const ViewTemplate = () => {
   
     if (window.confirm('Are you sure you want to delete this template?')) {
       try {
-        await axios.delete(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}`, config);
+        await axios.delete(`${api}/user/templates/${id}`, config);
         alert('Template deleted successfully.');
         // Redirect the user after deletion (you can change this route)
         window.location.href = '/templates';

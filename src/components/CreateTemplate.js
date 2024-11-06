@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+const api = process.env.REACT_APP_API_URL;
 
 const CreateTemplate = () => {
   const [title, setTitle] = useState('');
@@ -59,7 +60,7 @@ const CreateTemplate = () => {
     }
 
     try {
-      const response = await axios.post('https://form-app-backend-vz4z.onrender.com/user/templates', formData, {
+      const response = await axios.post(`${api}/user/templates`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data', // Important for file upload

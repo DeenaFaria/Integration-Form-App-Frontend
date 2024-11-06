@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+const api = process.env.REACT_APP_API_URL;
 
 const Register = () => {
   const [username, setUsername] = useState(""); // Change name to username
@@ -18,7 +19,7 @@ const Register = () => {
     const body = { username, email, password }; // Change name to username
 
     try {
-        const res = await axios.post("https://form-app-backend-vz4z.onrender.com/routes/auth/register", body);
+        const res = await axios.post(`${api}/routes/auth/register`, body);
 
       localStorage.setItem("token", res.data.token); // Store token
       window.location = "/login"; // Redirect to dashboard after registration

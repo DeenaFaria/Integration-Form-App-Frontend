@@ -3,6 +3,9 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { DarkModeContext } from '../context/DarkModeContext';
 import { useTranslation } from 'react-i18next';
+const api = process.env.REACT_APP_API_URL;
+console.log("API URL:", api);
+
 
 const Home = () => {
   const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
@@ -20,7 +23,7 @@ const Home = () => {
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        const res = await axios.get("https://form-app-backend-vz4z.onrender.com/routes/user/latest");
+        const res = await axios.get(`${api}/routes/user/latest`);
         setTemplates(res.data);
       } catch (err) {
         console.error(err);
@@ -32,7 +35,7 @@ const Home = () => {
   useEffect(() => {
     const fetchPopularTemplates = async () => {
       try {
-        const res = await axios.get("https://form-app-backend-vz4z.onrender.com/routes/user/most-liked");
+        const res = await axios.get(`${api}/routes/user/most-liked`);
         setPopularTemplates(res.data);
       } catch (err) {
         console.error(err);
@@ -44,7 +47,7 @@ const Home = () => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const res = await axios.get("https://form-app-backend-vz4z.onrender.com/routes/user/tags");
+        const res = await axios.get(`${api}/routes/user/tags`);
         setTags(res.data);
       } catch (err) {
         console.error(err);
@@ -66,7 +69,7 @@ const Home = () => {
   };
 
   const fetchSearchResults = (term) => {
-    axios.get(`https://form-app-backend-vz4z.onrender.com/routes/user/search?query=${term}`)
+    axios.get(`${api}/routes/user/search?query=${term}`)
       .then(res => {
         setSearchResults(res.data.templates);
       })

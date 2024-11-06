@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+const api = process.env.REACT_APP_API_URL;
 
 
 const EditTemplate = () => {
@@ -28,7 +29,7 @@ const EditTemplate = () => {
       };
 
       try {
-        const res = await axios.get(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}`, config);
+        const res = await axios.get(`${api}/user/templates/${id}`, config);
         const parsedTags = JSON.parse(res.data.tags || '[]');
 
         const parsedQuestions = res.data.questions.map((question) => {
@@ -234,7 +235,7 @@ const handleQuestionChange = (questionId, key, value) => {
     });
   
     try {
-      await axios.put(`https://form-app-backend-vz4z.onrender.com/user/templates/${id}`, formData, config);
+      await axios.put(`${api}/user/templates/${id}`, formData, config);
       alert('Template saved successfully');
     } catch (err) {
       setError(err.response ? err.response.data : 'Error saving template');
